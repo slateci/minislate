@@ -1,0 +1,32 @@
+MiniSLATE Install
+
+NOTE: Host systems with Swap are currently unsupported, please run `swapoff -a` first. This is anticipated to change.
+
+First install dependecies: Docker CE and Docker Compose
+
+Docker CE on Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+Other operating systems are in the sidebar.
+
+Docker Compose:
+Use pip, install with your package manager.
+
+Then: (sudo) pip install docker-compose
+
+Inside the project directory run: ./start.sh
+
+This will take a while. It is pulling dependencies and compiling the Slate project.
+
+Ensure that the 'endpoint' and 'token' files in slate-config have 600 permissions.
+
+When the process is complete you can issue commands from the slate client in a new terminal:
+
+docker-compose exec slate slate ...(cluster list, vo list, etc)...
+
+You can also just get a shell in the slate container with: docker-compose exec slate /bin/bash
+
+To turn off the environment but not destroy it, run: docker-compose down
+Then turn it back on with: docker-compose up -d
+
+To completely destroy the environment such that it can be created again with start.sh, run: ./purge.sh
+
+The portal is accessible at https://localhost:5000/ on the host machine.

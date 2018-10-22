@@ -1,0 +1,22 @@
+FROM solita/ubuntu-systemd:18.04
+
+RUN apt-get update -qq && apt-get install -qqy \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    lxc \
+    iptables
+    
+RUN curl -sSL https://get.docker.com/ | sh
+
+VOLUME /var/lib/docker
+
+RUN /bin/sh -c "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"
+RUN /bin/sh -c "echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list"
+RUN apt-get update && apt-get install -y kubelet=1.11.2-00 kubeadm=1.11.2-00 kubectl=1.11.2-00 && apt-get clean
+
+ADD ./wrapdocker /usr/local/bin/wrapdocker
+ADD ./init.sh .
+RUN chmod +x /usr/local/bin/wrapdocker
+RUN chmod +x ./init.sh
+CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]

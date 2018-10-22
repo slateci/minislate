@@ -1,0 +1,43 @@
+version: '3.1'
+services:
+  db:
+    image: dwmkerr/dynamodb
+    restart: always
+  kube:
+    build:
+      context: dind/
+    restart: always
+    tty: true
+    privileged: true
+    cap_add:
+      - ALL
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - /lib/modules:/lib/modules
+      - kubernetes:/etc/kubernetes
+  slate:
+    depends_on:
+      - db
+      - kube
+    build:
+      context: .
+    environment:
+      - SLATE_awsEndpoint=db:8000
+    restart: always
+    command: /bin/sh -c "cd /opt/slate-api-server/build && ./slate-service"
+    stdin_open: true
+    tty: true
+    privileged: true
+    volumes:
+      - ./slate-config:/root/.slate
+      - ./slate_portal_user:/opt/slate-api-server/build/slate_portal_user
+      - ./slate-config/endpoint:/opt/slate-portal/slate_api_endpoint.txt
+      - ./slate-config/token:/etc/slate/secrets/slate_api_token.txt
+      - kubernetes:/etc/kubernetes
+    ports:
+      - 5000:5000
+      - 5100:5100
+volumes:
+  kubernetes:
