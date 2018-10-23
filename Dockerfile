@@ -1,7 +1,6 @@
 FROM bash:latest as helm
 WORKDIR /src
 RUN apk update && apk --no-cache add ca-certificates wget openssl
-# helm
 ENV HELM_INSTALL_DIR="/src"
 RUN wget -q -O- https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash >/dev/null 2>&1; exit 0
 
@@ -26,7 +25,6 @@ RUN mkdir build && cd build && cmake .. && make -j${CORES}
 RUN cd build && dd if=/dev/urandom of=encryptionKey bs=1024 count=1
 WORKDIR /opt/slate-portal
 RUN pip install virtualenv
-#RUN git clone https://github.com/globus/globus-sample-data-portal .
 RUN git clone https://github.com/slateci/prototype-portal.git .
 RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
 WORKDIR /
