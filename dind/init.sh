@@ -1,10 +1,7 @@
 #!/bin/bash
-#wrapdocker &
 systemctl restart kubelet
-kubeadm init --ignore-preflight-errors=all --kubernetes-version=v1.11.2
+kubeadm init --ignore-preflight-errors=all
 export KUBECONFIG=/etc/kubernetes/admin.conf
-#kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-#kubectl rollout status ds/weave-net -n kube-system
 kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/hosted/etcd.yaml
 kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/rbac.yaml
 kubectl apply -f https://docs.projectcalico.org/v3.2/getting-started/kubernetes/installation/hosted/calico.yaml
