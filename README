@@ -30,4 +30,10 @@ Then turn it back on with: docker-compose start
 
 To completely destroy the environment such that it can be created again with start.sh, run: ./purge.sh
 
+Note that purge.sh does not remove the images that were built with the first run of start.sh.
+It removes the containers and their volumes so any data added by you is destroyed.
+Therefore, you will not need to wait for the build process to complete when running start.sh again.
+
+To force a rebuild and pull the latest versions of the software run: docker-compose build --no-cache slate
+
 The portal is accessible at https://localhost:5000/ on the host machine.
