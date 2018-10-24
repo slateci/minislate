@@ -1,5 +1,15 @@
 #!/bin/bash
 
+for file in slate-config/*; do
+        if [[ $(stat -c %U $file) != root ]]; then
+                echo "Fixing ownership of $file."
+                sudo chown root:root $file
+        fi
+        if [[ $(stat -c %a $file) != 600 ]]; then
+                echo "Fixing permissions of $file."
+                sudo chmod 600 $file
+        fi
+done
 docker-compose up -d
 echo "Waiting for systemd to start up..."
 sleep 10
