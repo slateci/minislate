@@ -1,7 +1,5 @@
 MiniSLATE Install
 
-NOTE: Host systems with Swap are currently unsupported, please run `swapoff -a` first. This is anticipated to change.
-
 First install dependecies: Docker CE and Docker Compose
 
 Docker CE on Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
