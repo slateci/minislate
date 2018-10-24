@@ -16,6 +16,7 @@ Inside the project directory run: ./start.sh
 This will take a while. It is pulling dependencies and compiling the Slate project.
 
 Ensure that the 'endpoint' and 'token' files in slate-config have 600 permissions and are owned by root.
+The start.sh script will verify these permissions are set correctly and will change them if they are not.
 
 When the process is complete you can issue commands from the slate client in a new terminal:
 
