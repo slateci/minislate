@@ -18,8 +18,6 @@ RUN apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-get clea
 ADD 10-kubeadm.conf /etc/systemd/system/kubelet.service.d/
 ADD config.yaml /etc/systemd/system/kubelet.service.d/
 
-ADD ./wrapdocker /usr/local/bin/wrapdocker
 ADD ./init.sh .
-RUN chmod +x /usr/local/bin/wrapdocker
 RUN chmod +x ./init.sh
 CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
