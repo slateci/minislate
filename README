@@ -24,8 +24,8 @@ docker-compose exec slate slate ...(cluster list, vo list, etc)...
 
 You can also just get a shell in the slate container with: docker-compose exec slate /bin/bash
 
-To turn off the environment but not destroy it, run: docker-compose down
-Then turn it back on with: docker-compose up -d
+To turn off the environment but not destroy it, run: docker-compose stop
+Then turn it back on with: docker-compose start
 
 To completely destroy the environment such that it can be created again with start.sh, run: ./purge.sh
 
