@@ -27,9 +27,9 @@ You can also just get a shell in the slate container with: docker-compose exec s
 To turn off the environment but not destroy it, run: docker-compose stop
 Then turn it back on with: docker-compose start
 
-To completely destroy the environment such that it can be created again with start.sh, run: ./purge.sh
+To completely destroy the environment such that it can be created again with start.sh, run: docker-compose down -v
 
-Note that purge.sh does not remove the images that were built with the first run of start.sh.
+Note that this command does not remove the images that were built with the first run of start.sh.
 It removes the containers and their volumes so any data added by you is destroyed.
 Therefore, you will not need to wait for the build process to complete when running start.sh again.
 
