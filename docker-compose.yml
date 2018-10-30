@@ -11,9 +11,6 @@ services:
     privileged: true
     cap_add:
       - ALL
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     network_mode: host
     volumes:
       - /lib/modules:/lib/modules
@@ -30,7 +27,6 @@ services:
     command: /bin/sh -c "cd /opt/slate-api-server/build && ./slate-service"
     stdin_open: true
     tty: true
-    privileged: true
     volumes:
       - ./slate-config:/root/.slate
       - ./slate_portal_user:/opt/slate-api-server/build/slate_portal_user
