@@ -1,11 +1,11 @@
 #!/bin/bash
 
 for file in slate-config/*; do
-        if [[ $(stat -c %U $file) != root ]]; then
+        if [[ $(stat -c %U $file 2>/dev/null || stat -f '%Su' $file) != root ]]; then
                 echo "Fixing ownership of $file."
-                sudo chown root:root $file
+                sudo chown root $file
         fi
-        if [[ $(stat -c %a $file) != 600 ]]; then
+        if [[ $(stat -c %a $file 2>/dev/null || stat -f '%A' $file) != 600 ]]; then
                 echo "Fixing permissions of $file."
                 sudo chmod 600 $file
         fi
