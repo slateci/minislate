@@ -11,7 +11,7 @@ WORKDIR /src
 RUN apt-get update && apt-get install -y apt-transport-https curl gnupg software-properties-common screen
 RUN /bin/sh -c "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"
 RUN /bin/sh -c "echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list"
-RUN apt-get update && apt-get install -y g++ cmake git libcurl4-openssl-dev zlib1g-dev libssl-dev libboost-all-dev subversion libyaml-cpp-dev python-pip kubectl=1.11.0-00 && apt-get clean
+RUN apt-get update && apt-get install -y g++ cmake git libcurl4-openssl-dev zlib1g-dev libssl-dev libboost-all-dev subversion libyaml-cpp-dev python-pip kubectl && apt-get clean
 COPY --from=helm /src/helm /usr/local/bin/helm
 RUN mkdir /root/.kube
 RUN curl http://jenkins.slateci.io/artifacts/slate-linux.tar.gz -O
