@@ -38,7 +38,7 @@ address() {
 }
 
 rebuild() {
-  docker-compose build --no-cache
+  docker-compose build --no-cache $1
 }
 
 shell() {
