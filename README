@@ -11,7 +11,7 @@ Use pip, install with your package manager.
 
 Then: (sudo) pip install docker-compose
 
-Inside the project directory run: ./start.sh
+Inside the project directory run: ./minislate start
 
 This will take a while. It is pulling dependencies and compiling the Slate project.
 
@@ -20,19 +20,19 @@ The start.sh script will verify these permissions are set correctly and will cha
 
 When the process is complete you can issue commands from the slate client in a new terminal:
 
-docker-compose exec slate slate ...(cluster list, vo list, etc)...
+./minislate slate ...(cluster list, vo list, etc)...
 
-You can also just get a shell in the slate container with: docker-compose exec slate /bin/bash
+You can also just get a shell in the slate container with: ./minislate shell slate
 
-To turn off the environment but not destroy it, run: docker-compose stop
-Then turn it back on with: docker-compose start
+To turn off the environment but not destroy it, run: ./minislate pause
+Then turn it back on with: ./minislate resume
 
-To completely destroy the environment such that it can be created again with start.sh, run: docker-compose down -v
+To completely destroy the environment such that it can be created again with start.sh, run: ./minislate purge
 
-Note that this command does not remove the images that were built with the first run of start.sh.
+Note that this command does not remove the images that were built with the first run of `minislate start`.
 It removes the containers and their volumes so any data added by you is destroyed.
-Therefore, you will not need to wait for the build process to complete when running start.sh again.
+Therefore, you will not need to wait for the build process to complete when running `minislate start` again.
 
-To force a rebuild and pull the latest versions of the software run: docker-compose build --no-cache slate
+To force a rebuild and pull the latest versions of the software run: ./minislate build
 
 The portal is accessible at https://localhost:5000/ on the host machine.

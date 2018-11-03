@@ -1,0 +1,57 @@
+#!/bin/bash
+
+start() {
+  for file in slate-config/*; do
+    if [[ $(stat -c %U $file 2>/dev/null || stat -f '%Su' $file) != root ]]; then
+      echo "Fixing ownership of $file."
+      sudo chown root $file
+    fi
+    if [[ $(stat -c %a $file 2>/dev/null || stat -f '%A' $file) != 600 ]]; then
+      echo "Fixing permissions of $file."
+      sudo chmod 600 $file
+    fi
+  done
+  docker-compose up -d
+  echo "Waiting for systemd to start up..."
+  sleep 10
+  docker-compose exec kube ./init.sh
+  docker-compose exec slate helm init --service-account tiller
+  docker-compose exec slate pip install -r /opt/slate-portal/requirements.txt
+  docker-compose exec slate sh -c "sed -i 's/localhost/0\.0\.0\.0/g' /opt/slate-portal/run_*"
+  docker-compose exec -d slate /bin/sh -c "cd /opt/slate-portal && ./run_portal.py"
+}
+
+pause() {
+  docker-compose stop
+}
+
+resume() {
+  docker-compose start
+}
+
+purge() {
+  docker-compose down -v
+}
+
+address() {
+  docker-compose exec kube ip -f inet addr show eth0 | grep -Po 'inet \K[\d.]+' | xargs
+}
+
+rebuild() {
+  docker-compose build --no-cache
+}
+
+shell() {
+  docker-compose exec $1 /bin/bash
+}
+
+slate() {
+  docker-compose exec slate slate "$@"
+}
+
+if [[ $1 =~ ^(start|pause|resume|purge|address|rebuild|shell|slate)$ ]]; then
+  "$@"
+else
+  echo "Invalid subcommand $1" >&2
+  exit 1
+fi
