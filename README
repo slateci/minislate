@@ -9,7 +9,7 @@ Other operating systems are in the sidebar.
 Docker Compose:
 Use pip, install with your package manager.
 
-Then: (sudo) pip install docker-compose
+Use pip, install with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
 
 Inside the project directory run: ./minislate start
 
