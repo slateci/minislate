@@ -3,7 +3,9 @@ MiniSLATE Install
 First install dependecies: Docker CE and Docker Compose
 
 Docker CE on Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+
 Docker CE on CentOS: https://docs.docker.com/install/linux/docker-ce/centos/
+
 Other operating systems are in the sidebar.
 
 Docker Compose:
