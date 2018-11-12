@@ -7,7 +7,6 @@ Docker CE on CentOS: https://docs.docker.com/install/linux/docker-ce/centos/
 Other operating systems are in the sidebar.
 
 Docker Compose:
-Use pip, install with your package manager.
 
 Use pip, install with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
 
