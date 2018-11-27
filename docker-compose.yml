@@ -23,12 +23,15 @@ services:
     environment:
       - SLATE_awsEndpoint=db:8000
     restart: always
-    command: /bin/sh -c "cd /opt/slate-api-server/build && ./slate-service"
+#    command: /usr/bin/slate-service
+    command: /bin/sleep 1d
     stdin_open: true
     tty: true
+    cap_add:
+      - SYS_PTRACE
     volumes:
       - ./slate-config:/root/.slate
-      - ./slate_portal_user:/opt/slate-api-server/build/slate_portal_user
+      - ./slate_portal_user:/slate_portal_user
       - ./slate-config/endpoint:/opt/slate-portal/slate_api_endpoint.txt
       - ./slate-config/token:/etc/slate/secrets/slate_api_token.txt
       - kubernetes:/etc/kubernetes
