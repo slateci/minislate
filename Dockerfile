@@ -6,7 +6,6 @@ RUN wget -q -O- https://raw.githubusercontent.com/kubernetes/helm/master/scripts
 
 FROM centos:7
 ENV KUBECONFIG=/etc/kubernetes/admin.conf
-ARG CORES=1
 WORKDIR /src
 ADD kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 RUN yum -y update && yum install -y epel-release
