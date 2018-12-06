@@ -9,7 +9,7 @@ ENV KUBECONFIG=/etc/kubernetes/admin.conf
 WORKDIR /src
 ADD kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 RUN yum -y update && yum install -y epel-release
-RUN yum -y update && yum install -y ca-certificates git which kubectl gcc gcc-c++.x86_64 boost-devel.x86_64 zlib-devel openssl-devel libcurl-devel subversion.x86_64 yaml-cpp-devel.x86_64 make cmake3 python-pip
+RUN yum -y update && yum install -y ca-certificates git which kubectl gcc gcc-c++.x86_64 boost-devel.x86_64 zlib-devel openssl-devel libcurl-devel subversion.x86_64 yaml-cpp-devel.x86_64 python-pip
 RUN yum clean all && rm -rf /var/cache/yum
 COPY --from=helm /src/helm /usr/local/bin/helm
 RUN mkdir /root/.kube
