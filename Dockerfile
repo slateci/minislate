@@ -15,10 +15,10 @@ COPY --from=helm /src/helm /usr/local/bin/helm
 RUN mkdir /root/.kube
 RUN curl http://jenkins.slateci.io/artifacts/slate-linux.tar.gz -O
 RUN tar xzf slate-linux.tar.gz && chmod +x slate && mv slate /usr/bin/
-RUN curl http://jenkins.slateci.io/artifacts/slate-api-server.tar.gz -O
-RUN tar xzf slate-api-server.tar.gz && rm -f slate-api-server.tar.gz && mv slate-service /usr/bin/
 RUN curl http://jenkins.slateci.io/artifacts/static/aws-sdk-cpp-dynamodb-libs-1.5.25-1.el7.centos.x86_64.rpm -O
 RUN yum install -y aws-sdk-cpp-dynamodb-libs-1.5.25-1.el7.centos.x86_64.rpm
+RUN curl http://jenkins.slateci.io/artifacts/slate-api-server-0.1.0-1.el7.x86_64.rpm -O
+RUN yum install -y slate-api-server-0.1.0-1.el7.x86_64.rpm
 WORKDIR /opt/slate-portal
 RUN rm -rf /src
 RUN pip install virtualenv
