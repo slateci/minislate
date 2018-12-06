@@ -1,7 +1,7 @@
 FROM centos:7
 ENV KUBECONFIG=/etc/kubernetes/admin.conf
 WORKDIR /src
-ADD dind/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+ADD kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 RUN yum install -y ca-certificates git which kubectl gcc gcc-c++.x86_64 boost-devel.x86_64 zlib-devel openssl-devel libcurl-devel subversion.x86_64 openssl which
 RUN yum clean all && rm -rf /var/cache/yum
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | sh
