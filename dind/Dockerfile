@@ -1,22 +1,19 @@
-FROM solita/ubuntu-systemd:18.04
+FROM centos/systemd
 
-RUN apt-get update -qq && apt-get install -qqy \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    lxc \
-    iptables
+RUN yum install -y ca-certificates curl lxc iptables
     
-RUN curl -sSL https://get.docker.com/ | sh
+RUN curl -sSL https://get.docker.com/ | sh > /dev/null
+RUN systemctl enable docker.service
 
 VOLUME /var/lib/docker
 
-RUN /bin/sh -c "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"
-RUN /bin/sh -c "echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list"
-RUN apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-get clean
+ADD ./kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+RUN yum install -y kubelet kubeadm kubectl && yum clean all && rm -rf /var/cache/yum
 
 ADD 10-kubeadm.conf /etc/systemd/system/kubelet.service.d/
 ADD config.yaml /etc/systemd/system/kubelet.service.d/
+
+RUN systemctl enable kubelet.service
 
 ADD ./init.sh .
 RUN chmod +x ./init.sh
