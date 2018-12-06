@@ -23,8 +23,7 @@ services:
     environment:
       - SLATE_awsEndpoint=db:8000
     restart: always
-#    command: /usr/bin/slate-service
-    command: /bin/sleep 1d
+    command: /usr/bin/slate-service
     stdin_open: true
     tty: true
     cap_add:
