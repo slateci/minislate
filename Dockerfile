@@ -1,30 +1,25 @@
-FROM bash:latest as helm
-WORKDIR /src
-RUN apk update && apk --no-cache add ca-certificates wget openssl
-ENV HELM_INSTALL_DIR="/src"
-RUN wget -q -O- https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash >/dev/null 2>&1; exit 0
-
-FROM ubuntu:18.04
+FROM centos:7
 ENV KUBECONFIG=/etc/kubernetes/admin.conf
-ARG CORES=1
 WORKDIR /src
-RUN apt-get update && apt-get install -y apt-transport-https curl gnupg software-properties-common screen
-RUN /bin/sh -c "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"
-RUN /bin/sh -c "echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list"
-RUN apt-get update && apt-get install -y g++ cmake git libcurl4-openssl-dev zlib1g-dev libssl-dev libboost-all-dev subversion libyaml-cpp-dev python-pip kubectl && apt-get clean
-COPY --from=helm /src/helm /usr/local/bin/helm
+ADD kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+RUN yum install -y ca-certificates git which kubectl gcc gcc-c++.x86_64 boost-devel.x86_64 zlib-devel openssl-devel libcurl-devel subversion.x86_64 openssl which
+RUN yum clean all && rm -rf /var/cache/yum
+RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | sh
 RUN mkdir /root/.kube
-RUN curl http://jenkins.slateci.io/artifacts/slate-linux.tar.gz -O
-RUN tar xzvf slate-linux.tar.gz && chmod +x slate && mv slate /usr/bin/
-WORKDIR /opt/slate-api-server
-RUN rm -rf /src
-RUN git clone https://github.com/slateci/slate-api-server.git .
-RUN mkdir aws && cd aws && curl -LO https://github.com/aws/aws-sdk-cpp/archive/1.4.70.tar.gz && tar xzf 1.4.70.tar.gz && mkdir aws-sdk-cpp-1.4.70-build
-RUN cd aws/aws-sdk-cpp-1.4.70-build && cmake ../aws-sdk-cpp-1.4.70 -DBUILD_ONLY="dynamodb" -DBUILD_SHARED_LIBS=Off && make -j${CORES} && make install
-RUN mkdir build && cd build && cmake .. && make -j${CORES}
-RUN cd build && dd if=/dev/urandom of=encryptionKey bs=1024 count=1
+RUN curl -s -O http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/y/yaml-cpp-0.5.1-1.el7.2.x86_64.rpm
+RUN yum install -y yaml-cpp-0.5.1-1.el7.2.x86_64.rpm
+RUN curl -s -O http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/y/yaml-cpp-devel-0.5.1-1.el7.2.x86_64.rpm
+RUN yum install -y yaml-cpp-devel-0.5.1-1.el7.2.x86_64.RUN curl -s -O https://jenkins.slateci.io/artifacts/client/slate-linux.tar.gz
+RUN tar xzf slate-linux.tar.gz && chmod +x slate && mv slate /usr/bin/
+RUN curl -s -O http://jenkins.slateci.io/artifacts/static/aws-sdk-cpp-dynamodb-libs-1.5.25-1.el7.centos.x86_64.rpm
+RUN yum install -y aws-sdk-cpp-dynamodb-libs-1.5.25-1.el7.centos.x86_64.rpm
+RUN curl -s -O http://jenkins.slateci.io/artifacts/slate-api-server-0.1.0-1.el7.x86_64.rpm
+RUN yum install -y slate-api-server-0.1.0-1.el7.x86_64.rpm
 WORKDIR /opt/slate-portal
+RUN rm -rf /src
+RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python
 RUN pip install virtualenv
 RUN git clone https://github.com/slateci/prototype-portal.git .
 RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
 WORKDIR /
+RUN dd if=/dev/urandom of=encryptionKey bs=1024 count=1
