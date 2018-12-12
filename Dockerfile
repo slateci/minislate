@@ -9,7 +9,7 @@ RUN mkdir /root/.kube
 RUN curl -s -O http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/y/yaml-cpp-0.5.1-1.el7.2.x86_64.rpm
 RUN yum install -y yaml-cpp-0.5.1-1.el7.2.x86_64.rpm
 RUN curl -s -O http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/y/yaml-cpp-devel-0.5.1-1.el7.2.x86_64.rpm
-RUN yum install -y yaml-cpp-devel-0.5.1-1.el7.2.x86_64.
+RUN yum install -y yaml-cpp-devel-0.5.1-1.el7.2.x86_64.rpm
 RUN curl -s -O https://jenkins.slateci.io/artifacts/client/slate-linux.tar.gz
 RUN tar xzf slate-linux.tar.gz && chmod +x slate && mv slate /usr/bin/
 RUN curl -s -O http://jenkins.slateci.io/artifacts/static/aws-sdk-cpp-dynamodb-libs-1.5.25-1.el7.centos.x86_64.rpm
