@@ -35,7 +35,7 @@ address() {
   docker-compose exec kube ip -f inet addr show eth0 | grep -Po 'inet \K[\d.]+' | xargs
 }
 
-rebuild() {
+build() {
   docker-compose build --no-cache $1
 }
 
@@ -47,7 +47,7 @@ slate() {
   docker-compose exec slate slate "$@"
 }
 
-if [[ $1 =~ ^(start|pause|resume|purge|address|rebuild|shell|slate)$ ]]; then
+if [[ $1 =~ ^(start|pause|resume|purge|address|build|shell|slate)$ ]]; then
   "$@"
 else
   echo "Invalid subcommand $1" >&2
