@@ -20,9 +20,9 @@ At least 10GB available disk is recommended. Kubernetes will take up a few GB al
 
 ### Docker CE:
 
-Docker CE on Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
-
 Docker CE on CentOS: https://docs.docker.com/install/linux/docker-ce/centos/
+
+Docker CE on Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 Other Linux operating systems are in the sidebar.
 
@@ -30,11 +30,11 @@ Docker Desktop for MacOS: https://hub.docker.com/editions/community/docker-ce-de
 
 ### Docker Compose:
 
-Use [pip](https://github.com/pypa/pip), install with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
+MacOS users will have docker-compose installed automatically with Docker Desktop.
+
+On Linux use [pip](https://github.com/pypa/pip). Install with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
 
 `(sudo) pip install docker-compose`
-
-MacOS users will have docker-compose installed automatically with Docker Desktop.
 
 ### SLATE Docker Images:
 
