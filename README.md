@@ -30,11 +30,11 @@ Docker Desktop for MacOS: https://hub.docker.com/editions/community/docker-ce-de
 
 ### Docker Compose:
 
-MacOS users will have docker-compose installed automatically with Docker Desktop.
+MacOS users will have Docker Compose installed automatically with Docker Desktop.
 
-On Linux use [pip](https://github.com/pypa/pip). Install with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
+On Linux use [pip](https://github.com/pypa/pip). It can be installed with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
 
-`(sudo) pip install docker-compose`
+Then run: `(sudo) pip install docker-compose`
 
 ### SLATE Docker Images:
 
