@@ -1,8 +1,8 @@
 # MiniSLATE
 
-This project is a distribution of the SLATE project with a single Kubernetes node.
+This project is a local distribution of the [SLATE project](http://slateci.io/) with a single Kubernetes node.
 
-This project utilizes a 'docker-in-docker' architecture, the entire environment is enclosed in Docker containers, including Kubernetes.
+This project utilizes a 'docker-in-docker' architecture. The entire environment is enclosed in Docker containers, including Kubernetes.
 
 The primary purpose of this project is to provide a local development environment for SLATE applications with minimal host dependencies and less resources than VMs.
 
@@ -11,6 +11,8 @@ The primary purpose of this project is to provide a local development environmen
 MiniSLATE runs on Linux and MacOS.
 
 It is recommended Linux systems have 2 core CPU and 4GB RAM for minimum reasonable performance.
+
+Reasonably modern Mac computers should be adequate.
 
 At least 10GB available disk is recommended. Kubernetes will take up a few GB alone.
 
@@ -31,6 +33,8 @@ Docker Desktop for MacOS: https://hub.docker.com/editions/community/docker-ce-de
 Use [pip](https://github.com/pypa/pip), install with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
 
 `(sudo) pip install docker-compose`
+
+MacOS users will have docker-compose installed automatically with Docker Desktop.
 
 ### SLATE Docker Images:
 
