@@ -1,6 +1,6 @@
 # MiniSLATE Install
 
-## First install dependecies:
+## Install dependecies:
 
 ### Docker CE and Docker Compose
 
