@@ -47,7 +47,11 @@ slate() {
   docker-compose exec slate slate "$@"
 }
 
-if [[ $1 =~ ^(start|pause|resume|purge|address|build|shell|slate)$ ]]; then
+kubectl() {
+  docker-compose exec slate kubectl "$@"
+}
+
+if [[ $1 =~ ^(start|pause|resume|purge|address|build|shell|slate|kubectl)$ ]]; then
   "$@"
 else
   echo "Invalid subcommand $1" >&2
