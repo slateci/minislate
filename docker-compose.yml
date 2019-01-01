@@ -14,6 +14,7 @@ services:
     volumes:
       - /lib/modules:/lib/modules
       - kubernetes:/etc/kubernetes
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
   slate:
     depends_on:
       - db
