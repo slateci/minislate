@@ -32,8 +32,6 @@ services:
     command: /usr/bin/slate-service
     stdin_open: true
     tty: true
-    cap_add:
-      - SYS_PTRACE
     volumes:
       - ./slate-config:/root/.slate
       - ./slate_portal_user:/slate_portal_user
