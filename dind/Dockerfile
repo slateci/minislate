@@ -1,5 +1,7 @@
 FROM solita/ubuntu-systemd:18.04
 
+WORKDIR /
+
 RUN apt-get update -qq && apt-get install -qqy \
     apt-transport-https \
     ca-certificates \
