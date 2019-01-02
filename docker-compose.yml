@@ -3,6 +3,8 @@ services:
   db:
     image: dwmkerr/dynamodb
     restart: always
+    networks:
+      - nw
   kube:
     build:
       context: dind/
@@ -15,6 +17,9 @@ services:
       - /lib/modules:/lib/modules
       - kubernetes:/etc/kubernetes
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      nw:
+        ipv4_address: 192.168.199.5
   slate:
     depends_on:
       - db
@@ -38,5 +43,14 @@ services:
     ports:
       - 5000:5000
       - 5100:5100
+    networks:
+      - nw
+networks:
+  nw:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.199.0/24
 volumes:
   kubernetes:
