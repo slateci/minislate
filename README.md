@@ -46,8 +46,6 @@ This will take a minute or so. It is pulling container dependencies and the SLAT
 
 Run `./minislate init` to spin up the containers for the MiniSLATE environment and install Kubernetes.
 
-NOTE: `./minislate init` will verify that the 'endpoint' and 'token' files in slate-config have 600 permissions and are owned by root. It will use sudo to change them if they are not.
-
 When the process is complete you can issue commands from the slate client in a new terminal:
 
 `./minislate slate ...(cluster list, vo list, etc)...`
