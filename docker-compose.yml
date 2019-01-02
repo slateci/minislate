@@ -7,7 +7,7 @@ services:
       - nw
   kube:
     build:
-      context: dind/
+      context: kube/
     restart: always
     tty: true
     privileged: true
@@ -25,7 +25,7 @@ services:
       - db
       - kube
     build:
-      context: .
+      context: slate/
     environment:
       - SLATE_awsEndpoint=db:8000
     restart: always
