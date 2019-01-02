@@ -1,6 +1,6 @@
 #!/bin/bash
 
-start() {
+init() {
   for file in slate-config/*; do
     if [[ $(stat -c %U $file 2>/dev/null || stat -f '%Su' $file) != root ]]; then
       echo "Fixing ownership of $file."
@@ -19,20 +19,16 @@ start() {
   docker-compose exec -d slate /bin/sh -c "cd /opt/slate-portal && ./run_portal.py"
 }
 
-pause() {
+stop() {
   docker-compose stop
 }
 
-resume() {
+start() {
   docker-compose start
 }
 
-purge() {
+destroy() {
   docker-compose down -v
-}
-
-address() {
-  docker-compose exec kube ip -f inet addr show eth0 | grep -Po 'inet \K[\d.]+' | xargs
 }
 
 build() {
@@ -55,7 +51,7 @@ exec() {
   docker compose exec "$@"
 }
 
-if [[ $1 =~ ^(start|pause|resume|purge|address|build|shell|slate|kubectl|exec)$ ]]; then
+if [[ $1 =~ ^(init|start|stop|destroy|address|build|shell|slate|kubectl|exec)$ ]]; then
   "$@"
 else
   echo "Invalid subcommand $1" >&2

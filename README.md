@@ -44,9 +44,9 @@ This will take a minute or so. It is pulling container dependencies and the SLAT
 
 ## Usage
 
-Run `./minislate start` to spin up the containers for the MiniSLATE environment and install Kubernetes.
+Run `./minislate init` to spin up the containers for the MiniSLATE environment and install Kubernetes.
 
-NOTE: `./minislate start` will verify that the 'endpoint' and 'token' files in slate-config have 600 permissions and are owned by root. It will use sudo to change them if they are not.
+NOTE: `./minislate init` will verify that the 'endpoint' and 'token' files in slate-config have 600 permissions and are owned by root. It will use sudo to change them if they are not.
 
 When the process is complete you can issue commands from the slate client in a new terminal:
 
@@ -54,11 +54,11 @@ When the process is complete you can issue commands from the slate client in a n
 
 You can also just get a shell in the slate container with: `./minislate shell slate`
 
-To turn off the environment but not destroy it, run: `./minislate pause`
-Then turn it back on with: `./minislate resume`
+To turn off the environment but not destroy it, run: `./minislate stop`
+Then turn it back on with: `./minislate start`
 
-To **completely destroy** the environment such that it can be created again run: `./minislate purge`
+To **completely destroy** the environment such that it can be created again run: `./minislate destroy`
 
-`./minislate build` can be run again before restarting the environment with `./minislate start`
+`./minislate build` can be run again before re-initializing the environment with `./minislate init`
 
 `./minislate build` will always pull the latest releases of the SLATE software.
