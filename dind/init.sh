@@ -5,7 +5,7 @@ echo "FallbackDNS=8.8.4.4" >> /etc/systemd/resolved.conf
 systemctl restart systemd-resolved
 systemctl restart kubelet
 # Install Kubernetes
-kubeadm init --ignore-preflight-errors=all --pod-network-cidr=192.168.0.0/16
+kubeadm init --ignore-preflight-errors=all --pod-network-cidr=192.168.0.0/16 --apiserver-cert-extra-sans kube
 export KUBECONFIG=/etc/kubernetes/admin.conf
 # Remove master taint
 kubectl taint nodes --all node-role.kubernetes.io/master-
