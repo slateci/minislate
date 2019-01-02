@@ -33,10 +33,6 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./slate-config:/root/.slate
-      - ./slate_portal_user:/slate_portal_user
-      - ./slate-config/endpoint:/opt/slate-portal/slate_api_endpoint.txt
-      - ./slate-config/token:/etc/slate/secrets/slate_api_token.txt
       - kubernetes:/etc/kubernetes
     ports:
       - 5000:5000
