@@ -11,6 +11,7 @@ subparsers.add_parser('init', help='initialize minislate containers')
 subparsers.add_parser('pause', help='pause minislate containers')
 subparsers.add_parser('unpause', help='unpause minislate containers')
 subparsers.add_parser('destroy', help='completely destroy environment')
+subparsers.add_parser('status', help='view status of minislate containers')
 build = subparsers.add_parser('build', help='build/rebuild container images')
 build.add_argument('c2', metavar='container', choices=['kube','slate','db','all'], help='Example: `./minislate build slate`')
 shell = subparsers.add_parser('shell', help='open a shell in a minislate container')
@@ -71,6 +72,9 @@ elif args.c1 == 'shell':
   initcheck()
   readycheck()
   run('docker-compose exec '+args.c2+' /bin/bash')
+elif args.c1 == 'status':
+  initcheck()
+  run('docker-compose ps')
 elif args.c1 == 'slate':
   initcheck()
   readycheck()
