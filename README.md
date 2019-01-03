@@ -52,8 +52,8 @@ When the process is complete you can issue commands from the slate client in a n
 
 You can also just get a shell in the slate container with: `./minislate shell slate`
 
-To turn off the environment but not destroy it, run: `./minislate stop`
-Then turn it back on with: `./minislate start`
+To pause/suspend the environment run: `./minislate pause`
+Then turn it back on with: `./minislate unpause`
 
 To **completely destroy** the environment such that it can be created again run: `./minislate destroy`
 

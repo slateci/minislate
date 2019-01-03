@@ -7,8 +7,8 @@ import argparse
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="commands", dest="c1")
 subparsers.add_parser('init', help='initialize minislate containers')
-subparsers.add_parser('start', help='start minislate containers')
-subparsers.add_parser('stop', help='stop minislate containers')
+subparsers.add_parser('pause', help='pause minislate containers')
+subparsers.add_parser('unpause', help='unpause minislate containers')
 subparsers.add_parser('destroy', help='completely destroy environment')
 build = subparsers.add_parser('build', help='build/rebuild container images')
 build.add_argument('c2', metavar='container', choices=['kube','slate','db','all'], help='Example: `./minislate build slate`')
@@ -32,10 +32,10 @@ if args.c1 == 'init':
   run('docker-compose exec slate pip install -r /opt/slate-portal/requirements.txt')
   run('docker-compose exec slate sh -c "sed -i \'s/localhost/0\.0\.0\.0/g\' /opt/slate-portal/run_*"')
   run('docker-compose exec -d slate /bin/sh -c "cd /opt/slate-portal && ./run_portal.py"')
-elif args.c1 == 'stop':
-  run('docker-compose stop')
-elif args.c1 == 'start':
-  run('docker-compose start')
+elif args.c1 == 'pause':
+  run('docker-compose pause')
+elif args.c1 == 'unpause':
+  run('docker-compose unpause')
 elif args.c1 == 'destroy':
   run('docker-compose down -v')
 elif args.c1 == 'build':
