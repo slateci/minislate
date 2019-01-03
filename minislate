@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from subprocess import call, check_output
+from pprint import pprint
 from shlex import split
+import subprocess
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -22,12 +23,22 @@ exec_ = subparsers.add_parser('exec', help='wrapper of "docker-compose exec"')
 exec_.add_argument('c2', metavar='command', nargs=argparse.REMAINDER, help='Example: `./minislate exec kube ip addr`')
 args = parser.parse_args()
 
-def initcheck():
-  if not check_output(split('docker-compose ps -q')):
-    raise EnvironmentError('MiniSLATE is not initialized. Run: `./minislate init`')
+try:
+    from subprocess import DEVNULL # py3k
+except ImportError:
+    import os
+    DEVNULL = open(os.devnull, 'wb')
+
+def readycheck(initerr='MiniSLATE is not initialized. Run: `./minislate init`', rdyerr='MiniSLATE has non-ready containers. Is the environment paused?'):
+  if not subprocess.check_output(split('docker-compose ps -q')):
+    raise EnvironmentError(initerr)
+  try:
+    subprocess.check_call(split('/bin/sh -c "docker-compose ps | grep Up"'), stdout=DEVNULL, close_fds=True)
+  except subprocess.CalledProcessError:
+    raise EnvironmentError(rdyerr)
 
 def run(cmd):
-  call(split(cmd))
+  subprocess.call(split(cmd))
 
 if args.c1 == 'init':
   run('docker-compose up -d')
@@ -37,29 +48,30 @@ if args.c1 == 'init':
   run('docker-compose exec slate sh -c "sed -i \'s/localhost/0\.0\.0\.0/g\' /opt/slate-portal/run_*"')
   run('docker-compose exec -d slate /bin/sh -c "cd /opt/slate-portal && ./run_portal.py"')
 elif args.c1 == 'pause':
-  initcheck()
+  readycheck(rdyerr='It appears MiniSLATE is already paused.')
   run('docker-compose pause')
 elif args.c1 == 'unpause':
-  initcheck()
+  if not subprocess.check_output(split('docker-compose ps -q')):
+    raise EnvironmentError('MiniSLATE is not initialized. Run: `./minislate init`')
   run('docker-compose unpause')
 elif args.c1 == 'destroy':
-  initcheck()
+  readycheck()
   run('docker-compose down -v')
 elif args.c1 == 'build':
   run('docker-compose build --no-cache '+args.c2)
 elif args.c1 == 'shell':
-  initcheck()
+  readycheck()
   run('docker-compose exec '+args.c2+' /bin/bash')
 elif args.c1 == 'slate':
-  initcheck()
+  readycheck()
   c2 = ' '.join(args.c2)
   run('docker-compose exec slate slate '+c2)
 elif args.c1 == 'kubectl':
-  initcheck()
+  readycheck()
   c2 = ' '.join(args.c2)
   run('docker-compose exec slate kubectl '+c2)
 elif args.c1 == 'exec':
-  initcheck()
+  readycheck()
   c2 = ' '.join(args.c2)
   run('docker-compose exec '+c2)
 else:
