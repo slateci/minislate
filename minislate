@@ -1,49 +1,55 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-init() {
-  docker-compose up -d
-  docker-compose exec kube ./init.sh
-  docker-compose exec slate helm init --service-account tiller
-  docker-compose exec slate pip install -r /opt/slate-portal/requirements.txt
-  docker-compose exec slate sh -c "sed -i 's/localhost/0\.0\.0\.0/g' /opt/slate-portal/run_*"
-  docker-compose exec -d slate /bin/sh -c "cd /opt/slate-portal && ./run_portal.py"
-}
+from subprocess import call
+import argparse
+import shlex
 
-stop() {
-  docker-compose stop
-}
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers(title="commands", dest="c1")
+subparsers.add_parser('init', help='initialize minislate containers')
+subparsers.add_parser('start', help='start minislate containers')
+subparsers.add_parser('stop', help='stop minislate containers')
+subparsers.add_parser('destroy', help='completely destroy environment')
+build = subparsers.add_parser('build', help='build/rebuild container images')
+build.add_argument('c2', metavar='container', choices=['kube','slate','db','all'], help='Example: `./minislate build slate`')
+shell = subparsers.add_parser('shell', help='open a shell in a minislate container')
+shell.add_argument('c2', metavar='container', choices=['kube','slate','db'], help='Example: `./minislate shell slate`')
+slate = subparsers.add_parser('slate', help='run a slate command')
+slate.add_argument('c2', metavar='command', nargs=argparse.REMAINDER, help='Example: `./minislate slate vo list`')
+kubectl = subparsers.add_parser('kubectl', help='run a kubectl command')
+kubectl.add_argument('c2', metavar='command', nargs=argparse.REMAINDER, help='Example: `./minislate kubectl get po --all-namespaces`')
+exec_ = subparsers.add_parser('exec', help='wrapper of "docker-compose exec"')
+exec_.add_argument('c2', metavar='command', nargs=argparse.REMAINDER, help='Example: `./minislate exec kube ip addr`')
+args = parser.parse_args()
 
-start() {
-  docker-compose start
-}
+def run(cmd):
+    call(shlex.split(cmd))
 
-destroy() {
-  docker-compose down -v
-}
-
-build() {
-  docker-compose build --no-cache $1
-}
-
-shell() {
-  docker-compose exec $1 /bin/bash
-}
-
-slate() {
-  docker-compose exec slate slate "$@"
-}
-
-kubectl() {
-  docker-compose exec slate kubectl "$@"
-}
-
-exec() {
-  docker compose exec "$@"
-}
-
-if [[ $1 =~ ^(init|start|stop|destroy|address|build|shell|slate|kubectl|exec)$ ]]; then
-  "$@"
-else
-  echo "Invalid subcommand $1" >&2
-  exit 1
-fi
+if args.c1 == 'init':
+  run('docker-compose up -d')
+  run('docker-compose exec kube ./init.sh')
+  run('docker-compose exec slate helm init --service-account tiller')
+  run('docker-compose exec slate pip install -r /opt/slate-portal/requirements.txt')
+  run('docker-compose exec slate sh -c "sed -i \'s/localhost/0\.0\.0\.0/g\' /opt/slate-portal/run_*"')
+  run('docker-compose exec -d slate /bin/sh -c "cd /opt/slate-portal && ./run_portal.py"')
+elif args.c1 == 'stop':
+  run('docker-compose stop')
+elif args.c1 == 'start':
+  run('docker-compose start')
+elif args.c1 == 'destroy':
+  run('docker-compose down -v')
+elif args.c1 == 'build':
+  run('docker-compose build --no-cache '+args.c2)
+elif args.c1 == 'shell':
+  run('docker-compose exec '+args.c2+' /bin/bash')
+elif args.c1 == 'slate':
+  c2 = ' '.join(args.c2)
+  run('docker-compose exec slate slate '+c2)
+elif args.c1 == 'kubectl':
+  c2 = ' '.join(args.c2)
+  run('docker-compose exec slate kubectl '+c2)
+elif args.c1 == 'exec':
+  c2 = ' '.join(args.c2)
+  run('docker-compose exec '+c2)
+else:
+  raise ValueError('Invalid argument: '+args.c1)
