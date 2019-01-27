@@ -8,8 +8,6 @@ The primary purpose of this project is to provide a local development environmen
 
 ## Minimum Requirements
 
-MiniSLATE runs on Linux.
-
 2 cores CPU and 4GB RAM recommended for minimum reasonable performance.
 
 At least 10GB available disk is recommended. Kubernetes will take up a few GB alone.
