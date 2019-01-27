@@ -8,11 +8,9 @@ The primary purpose of this project is to provide a local development environmen
 
 ## Minimum Requirements
 
-MiniSLATE runs on Linux and MacOS.
+MiniSLATE runs on Linux.
 
-It is recommended Linux systems have 2 core CPU and 4GB RAM for minimum reasonable performance.
-
-Reasonably modern Mac computers should be adequate.
+2 cores CPU and 4GB RAM recommended for minimum reasonable performance.
 
 At least 10GB available disk is recommended. Kubernetes will take up a few GB alone.
 
@@ -26,13 +24,9 @@ Docker CE on Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 Other Linux operating systems are in the sidebar.
 
-Docker Desktop for MacOS: https://hub.docker.com/editions/community/docker-ce-desktop-mac
-
 ### Docker Compose:
 
-MacOS users will have Docker Compose installed automatically with Docker Desktop.
-
-On Linux use [pip](https://github.com/pypa/pip). It can be installed with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
+Use [pip](https://github.com/pypa/pip). It can be installed with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
 
 Then run: `(sudo) pip install docker-compose`
 
