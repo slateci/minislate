@@ -17,6 +17,9 @@ services:
       - /lib/modules:/lib/modules
       - kubernetes:/etc/kubernetes
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    ports:
+      - 8080:80
+      - 6443:6443
     networks:
       nw:
         ipv4_address: 192.168.199.5
