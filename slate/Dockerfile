@@ -14,7 +14,7 @@ RUN curl -s -O https://jenkins.slateci.io/artifacts/client/slate-linux.tar.gz
 RUN tar xzf slate-linux.tar.gz && chmod +x slate && mv slate /usr/bin/
 RUN curl -s -O http://jenkins.slateci.io/artifacts/static/aws-sdk-cpp-dynamodb-libs-1.5.25-1.el7.centos.x86_64.rpm
 RUN yum install -y aws-sdk-cpp-dynamodb-libs-1.5.25-1.el7.centos.x86_64.rpm
-RUN curl -s -O http://jenkins.slateci.io/artifacts/slate-api-server-0.1.0-1.el7.x86_64.rpm
+RUN curl -s -O http://jenkins.slateci.io/artifacts/server/slate-api-server-0.1.0-1.el7.x86_64.rpm
 RUN yum install -y slate-api-server-0.1.0-1.el7.x86_64.rpm
 WORKDIR /opt/slate-portal
 RUN rm -rf /src
