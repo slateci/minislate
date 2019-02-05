@@ -29,3 +29,5 @@ RUN sh -c 'echo "http://localhost:18080" | tee /root/.slate/endpoint /opt/slate-
 RUN sh -c 'echo "5B121807-7D5D-407A-8E22-5F001EF594D4" | tee /root/.slate/token /etc/slate/secrets/slate_api_token.txt > /dev/null'
 RUN chmod -R 600 /root/.slate
 ADD slate_portal_user /
+ADD init.sh /
+RUN chmod +x init.sh

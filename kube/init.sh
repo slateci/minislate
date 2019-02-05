@@ -6,7 +6,8 @@ systemctl restart systemd-resolved
 systemctl restart kubelet
 # Install Kubernetes
 kubeadm init --config config.yaml --ignore-preflight-errors=all
-export KUBECONFIG=/etc/kubernetes/admin.conf
+#export KUBECONFIG=/etc/kubernetes/admin.conf
+#echo 'export KUBECONFIG=/etc/kubernetes/admin.conf' >> /root/.bashrc
 # Remove master taint
 kubectl taint nodes --all node-role.kubernetes.io/master-
 # Calico
