@@ -5,6 +5,7 @@ WORKDIR /
 RUN apt-get update -qq && apt-get install -qqy \
     apt-transport-https \
     ca-certificates \
+    nfs-common \
     curl \
     lxc \
     iptables
