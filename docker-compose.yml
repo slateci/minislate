@@ -23,6 +23,18 @@ services:
     networks:
       nw:
         ipv4_address: 192.168.199.5
+  nfs:
+    image: itsthenetwork/nfs-server-alpine
+    restart: always
+    privileged: true
+    tty: true
+    environment:
+      - SHARED_DIRECTORY=/srv
+    volumes:
+      - nfsdata:/srv
+    networks:
+      nw:
+        ipv4_address: 192.168.199.6
   slate:
     depends_on:
       - db
@@ -51,3 +63,4 @@ networks:
         - subnet: 192.168.199.0/24
 volumes:
   kubernetes:
+  nfsdata:
