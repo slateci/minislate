@@ -43,6 +43,7 @@ services:
       context: slate/
     environment:
       - SLATE_awsEndpoint=db:8000
+      - SLATE_allowAdHocApps=true
     restart: always
     command: /usr/bin/slate-service
     stdin_open: true
@@ -52,6 +53,7 @@ services:
     ports:
       - 5000:5000
       - 5100:5100
+      - 18080:18080
     networks:
       - nw
 networks:
