@@ -20,6 +20,7 @@ services:
     ports:
       - 8080:80
       - 6443:6443
+# {PORTS}
     networks:
       nw:
         ipv4_address: 192.168.199.5
@@ -50,6 +51,7 @@ services:
     tty: true
     volumes:
       - kubernetes:/etc/kubernetes
+# {VOLUMES}
     ports:
       - 5000:5000
       - 5100:5100

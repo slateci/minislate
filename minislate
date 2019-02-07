@@ -5,12 +5,15 @@ from pprint import pprint
 from shlex import split
 import subprocess
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="commands", dest="c1")
 init = subparsers.add_parser('init', help='initialize minislate containers')
 init.add_argument('-p', '--port', '--publish', dest='ports', action='append', nargs='?',
-                  metavar='port-mapping', help='Example: `./minislate init -p 3000:3000`')
+                  metavar='docker-style-port-mapping', help='Example: `./minislate init -p 3000:3000`')
+init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
+                  metavar='docker-style-volume-mapping', help='Example: `./minislate init -v ~/workdir:/mnt`')
 subparsers.add_parser('pause', help='pause minislate containers')
 subparsers.add_parser('unpause', help='unpause minislate containers')
 subparsers.add_parser('destroy', help='completely destroy environment')
@@ -36,13 +39,12 @@ args = parser.parse_args()
 try:
   from subprocess import DEVNULL  # py3k
 except ImportError:
-  import os
-  DEVNULL = open(os.devnull, 'wb')
+    DEVNULL = open(os.devnull, 'wb')
 
 
 def initcheck(initerr='MiniSLATE is not initialized. Run: `./minislate init`'):
-  if not subprocess.check_output(split('docker-compose ps -q')):
-    raise EnvironmentError(initerr)
+    if not os.path.isfile('docker-compose.yml'):
+        raise EnvironmentError(initerr)
 
 
 def readycheck(rdyerr='MiniSLATE has non-ready containers. Is the environment paused?'):
@@ -58,10 +60,28 @@ def run(cmd):
 
 
 if args.c1 == 'init':
-  if subprocess.check_output(split('docker-compose ps -q')):
-    raise EnvironmentError(
-        'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
-  if(run('docker-compose up -d') == 0):
+    if os.path.isfile('docker-compose.yml'):
+        raise EnvironmentError(
+            'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
+    ports = []
+    volumes = []
+    if args.ports:
+        for item in args.ports:
+            ports.append('      - ' + item)
+    if args.volumes:
+        for item in args.volumes:
+            volumes.append('      - ' + item)
+    ports = '\n'.join(ports)
+    volumes = '\n'.join(volumes)
+    with open('docker-compose-template.txt', 'r') as file:
+        contents = file.read()
+    contents = contents.replace('# {PORTS}', ports)
+    contents = contents.replace('# {VOLUMES}', volumes)
+    with open('docker-compose.yml', 'w') as file:
+        file.write(contents)
+        file.flush()
+        os.fsync(file)
+    if(run('docker-compose up -d') == 0):
       run('docker-compose exec kube ./init.sh')
       run('docker-compose exec slate ./init.sh')
 elif args.c1 == 'pause':
@@ -77,14 +97,14 @@ elif args.c1 == 'unpause':
     raise EnvironmentError('MiniSLATE is not paused.')
   run('docker-compose unpause')
 elif args.c1 == 'destroy':
-  initcheck()
-  readycheck()
-  run('docker-compose down -v')
+    initcheck()
+    run('docker-compose down -v')
+    os.remove('docker-compose.yml')
 elif args.c1 == 'build':
-  if args.c2:
-    run('docker-compose build --no-cache ' + args.c2)
-  else:
-    run('docker-compose build --no-cache')
+    if args.c2:
+        run('docker-compose -f docker-compose-template.txt build --no-cache ' + args.c2)
+    else:
+        run('docker-compose -f docker-compose-template.txt build --no-cache')
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
