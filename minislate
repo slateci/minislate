@@ -11,9 +11,9 @@ parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="commands", dest="c1")
 init = subparsers.add_parser('init', help='initialize minislate containers')
 init.add_argument('-p', '--port', '--publish', dest='ports', action='append', nargs='?',
-                  metavar='docker-style-port-mapping', help='Example: `./minislate init -p 3000:3000`')
+                  metavar='hostPort:containerPort', help='Example: `./minislate init -p 3000:3000`')
 init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
-                  metavar='docker-style-volume-mapping', help='Example: `./minislate init -v ~/workdir:/mnt`')
+                  metavar='hostDir:containerDir', help='Example: `./minislate init -v ~/workdir:/mnt`')
 subparsers.add_parser('pause', help='pause minislate containers')
 subparsers.add_parser('unpause', help='unpause minislate containers')
 subparsers.add_parser('destroy', help='completely destroy environment')
