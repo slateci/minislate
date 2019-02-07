@@ -46,6 +46,8 @@ This will take a minute or so. It is pulling container dependencies and the SLAT
 
 Run `./minislate init` to spin up the containers for the MiniSLATE environment and install Kubernetes.
 
+**NOTE:** Docker-style ports and volumes can be passed: `./minislate init -p 3000:3000 -v ~/WorkDir:/mnt`
+
 When the process is complete you can issue commands from the slate client in a new terminal:
 
 `./minislate slate ...(cluster list, vo list, etc)...`
