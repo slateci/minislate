@@ -58,21 +58,12 @@ def run(cmd):
 
 
 if args.c1 == 'init':
-<<<<<<< c3e8b853e11a56c827da1b3cfc8ac3f8f05e6f20
   if subprocess.check_output(split('docker-compose ps -q')):
     raise EnvironmentError(
         'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
   if(run('docker-compose up -d') == 0):
       run('docker-compose exec kube ./init.sh')
       run('docker-compose exec slate ./init.sh')
-=======
-  pprint(args.ports)
-  # if subprocess.check_output(split('docker-compose ps -q'))
-  #raise EnvironmentError('MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
-  # subprocess.check_call(split('docker-compose up -d -f -'), stdin=)
-  #run('docker-compose exec kube ./init.sh')
-  #run('docker-compose exec slate ./init.sh')
->>>>>>> Fixing merge confict
 elif args.c1 == 'pause':
   initcheck()
   readycheck(rdyerr='It appears MiniSLATE is already paused.')
