@@ -71,7 +71,7 @@ if args.c1 == 'init':
             volumes.append('      - ' + item)
     ports = '\n'.join(ports)
     volumes = '\n'.join(volumes)
-    with open('docker-compose-template.txt', 'r') as file:
+    with open('docker-compose-template.yml', 'r') as file:
         contents = file.read()
     contents = contents.replace('# {PORTS}', ports)
     contents = contents.replace('# {VOLUMES}', volumes)
@@ -100,9 +100,9 @@ elif args.c1 == 'destroy':
     os.remove('docker-compose.yml')
 elif args.c1 == 'build':
     if args.c2:
-        run('docker-compose -f docker-compose-template.txt build --no-cache ' + args.c2)
+        run('docker-compose -f docker-compose-template.yml build --no-cache ' + args.c2)
     else:
-        run('docker-compose -f docker-compose-template.txt build --no-cache')
+        run('docker-compose -f docker-compose-template.yml build --no-cache')
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
