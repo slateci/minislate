@@ -39,14 +39,14 @@ def readycheck(rdyerr='MiniSLATE has non-ready containers. Is the environment pa
     raise EnvironmentError(rdyerr)
 
 def run(cmd):
-  subprocess.call(split(cmd))
+  return subprocess.call(split(cmd))
 
 if args.c1 == 'init':
   if subprocess.check_output(split('docker-compose ps -q')):
     raise EnvironmentError('MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
-  run('docker-compose up -d')
-  run('docker-compose exec kube ./init.sh')
-  run('docker-compose exec slate ./init.sh')
+  if(run('docker-compose up -d') == 0):
+      run('docker-compose exec kube ./init.sh')
+      run('docker-compose exec slate ./init.sh')
 elif args.c1 == 'pause':
   initcheck()
   readycheck(rdyerr='It appears MiniSLATE is already paused.')
