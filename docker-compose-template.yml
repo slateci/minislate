@@ -3,8 +3,6 @@ services:
   db:
     image: dwmkerr/dynamodb
     restart: always
-    networks:
-      - nw
   kube:
     build:
       context: kube/
@@ -21,9 +19,6 @@ services:
       - 8080:80
       - 6443:6443
 # {PORTS}
-    networks:
-      nw:
-        ipv4_address: 192.168.199.5
   nfs:
     image: itsthenetwork/nfs-server-alpine
     restart: always
@@ -33,9 +28,6 @@ services:
       - SHARED_DIRECTORY=/srv
     volumes:
       - nfsdata:/srv
-    networks:
-      nw:
-        ipv4_address: 192.168.199.6
   slate:
     depends_on:
       - db
@@ -56,15 +48,6 @@ services:
       - 5000:5000
       - 5100:5100
       - 18080:18080
-    networks:
-      - nw
-networks:
-  nw:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.199.0/24
 volumes:
   kubernetes:
   nfsdata:
