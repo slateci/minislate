@@ -97,6 +97,7 @@ elif args.c1 == 'unpause':
   run('docker-compose unpause')
 elif args.c1 == 'destroy':
     initcheck()
+    run('docker-compose kill -s SIGKILL kube')
     run('docker-compose down -v')
     os.remove('docker-compose.yml')
 elif args.c1 == 'build':
