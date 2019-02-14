@@ -11,7 +11,7 @@ RUN apt-get update -qq && apt-get install -qqy \
     curl \
     lxc \
     iptables
-    
+
 RUN curl -sSL https://get.docker.com/ | sh
 
 VOLUME /var/lib/docker
@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-get clea
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 RUN helm init --client-only
 
+ADD ms-ports /usr/bin/ms-ports
+RUN chmod +x /usr/bin/ms-ports
 ADD config.yaml .
 ADD init.sh .
 RUN chmod +x init.sh
