@@ -111,6 +111,8 @@ syncFrequency: 1m0s
 volumeStatsAggPeriod: 1m0s
 ---
 apiServer:
+  extraArgs:
+    service-node-port-range: 30000-30050
   timeoutForControlPlane: 4m0s
 apiVersion: kubeadm.k8s.io/v1beta1
 certificatesDir: /etc/kubernetes/pki
