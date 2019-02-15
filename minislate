@@ -14,7 +14,8 @@ init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
                   metavar='hostDir:containerDir', help='Example: `./minislate init -v ~/workdir:/mnt`')
 subparsers.add_parser('pause', help='pause minislate containers')
 subparsers.add_parser('unpause', help='unpause minislate containers')
-subparsers.add_parser('destroy', help='completely destroy environment')
+destroy = subparsers.add_parser('destroy', help='completely destroy environment')
+destroy.add_argument('--rmi', dest='rmi', action='store_true', help='Example: `./minislate destroy --rmi`')
 subparsers.add_parser('status', help='view status of minislate containers')
 expose = subparsers.add_parser('expose', help='expose minislate service to host')
 expose.add_argument('c2', metavar='hostPort:nodePort', nargs=1, help='Example: `./minislate expose 3000:30001`')
@@ -102,7 +103,10 @@ elif args.c1 == 'unpause':
 elif args.c1 == 'destroy':
     initcheck()
     run('docker-compose kill -s SIGKILL kube')
-    run('docker-compose down -v')
+    if args.rmi:
+      run('docker-compose down -v --rmi local')
+    else:
+      run('docker-compose down -v')
     os.remove('docker-compose.yml')
 elif args.c1 == 'build':
     if args.c2:
