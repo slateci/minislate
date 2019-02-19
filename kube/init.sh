@@ -4,6 +4,9 @@ echo "DNS=8.8.8.8" >> /etc/systemd/resolved.conf
 echo "FallbackDNS=8.8.4.4" >> /etc/systemd/resolved.conf
 systemctl restart systemd-resolved
 systemctl restart kubelet
+# Import cached hyperkube image
+docker load -i /hyperkube.tar
+rm -f /hyperkube.tar
 # Install Kubernetes
 kubeadm init --config config.yaml --ignore-preflight-errors=all
 # Remove master taint

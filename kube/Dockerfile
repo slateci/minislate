@@ -24,6 +24,7 @@ RUN helm init --client-only
 
 COPY ms-ports /usr/bin/ms-ports
 RUN chmod +x /usr/bin/ms-ports
+COPY hyperkube.tar .
 COPY config.yaml .
 COPY init.sh .
 RUN chmod +x init.sh
