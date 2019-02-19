@@ -4,8 +4,8 @@ ENV KUBECONFIG=/etc/kubernetes/admin.conf
 
 WORKDIR /src
 
-ADD kubernetes.repo /etc/yum.repos.d/kubernetes.repo
-ADD slate-server.repo /etc/yum.repos.d/slate-server.repo
+COPY kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+COPY slate-server.repo /etc/yum.repos.d/slate-server.repo
 RUN yum install -y ca-certificates git which kubectl gcc gcc-c++.x86_64 boost-devel.x86_64 zlib-devel openssl-devel libcurl-devel subversion.x86_64 openssl which
 RUN yum clean all && rm -rf /var/cache/yum
 
@@ -40,6 +40,6 @@ RUN sh -c 'echo "http://localhost:18080" | tee /root/.slate/endpoint /opt/slate-
 RUN sh -c 'echo "5B121807-7D5D-407A-8E22-5F001EF594D4" | tee /root/.slate/token /etc/slate/secrets/slate_api_token.txt > /dev/null'
 RUN chmod -R 600 /root/.slate
 
-ADD slate_portal_user /
-ADD init.sh /
+COPY slate_portal_user /
+COPY init.sh /
 RUN chmod +x init.sh

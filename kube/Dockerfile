@@ -22,9 +22,9 @@ RUN apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-get clea
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 RUN helm init --client-only
 
-ADD ms-ports /usr/bin/ms-ports
+COPY ms-ports /usr/bin/ms-ports
 RUN chmod +x /usr/bin/ms-ports
-ADD config.yaml .
-ADD init.sh .
+COPY config.yaml .
+COPY init.sh .
 RUN chmod +x init.sh
 CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
