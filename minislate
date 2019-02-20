@@ -17,10 +17,6 @@ subparsers.add_parser('unpause', help='unpause minislate containers')
 destroy = subparsers.add_parser('destroy', help='completely destroy environment')
 destroy.add_argument('--rmi', dest='rmi', action='store_true', help='Example: `./minislate destroy --rmi`')
 subparsers.add_parser('status', help='view status of minislate containers')
-expose = subparsers.add_parser('expose', help='expose minislate service to host')
-expose.add_argument('c2', metavar='hostPort:nodePort', nargs=1, help='Example: `./minislate expose 3000:30001`')
-unexpose = subparsers.add_parser('unexpose', help='unexpose minislate service to host')
-unexpose.add_argument('c2', metavar='portmap', nargs=1, help='Example: `./minislate unexpose 3000`')
 build = subparsers.add_parser('build', help='build/rebuild container images')
 build.add_argument('c2', metavar='container', nargs='?', choices=[
                    'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate build slate`')
@@ -129,14 +125,6 @@ elif args.c1 == 'slate':
   readycheck()
   c2 = ' '.join(args.c2)
   run('docker-compose exec slate slate ' + c2)
-elif args.c1 == 'expose':
-  initcheck()
-  readycheck()
-  run('docker-compose exec kube ms-ports expose '+args.c2[0])
-elif args.c1 == 'unexpose':
-  initcheck()
-  readycheck()
-  run('docker-compose exec kube ms-ports unexpose '+args.c2[0])
 elif args.c1 == 'kubectl':
   initcheck()
   readycheck()
