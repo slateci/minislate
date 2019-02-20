@@ -109,16 +109,12 @@ elif args.c1 == 'destroy':
       run('docker-compose down -v')
     os.remove('docker-compose.yml')
 elif args.c1 == 'build':
-    if args.c2 == 'kube':
-        print "Caching Hyperkube image"
-        run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:v1.13.0 && docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:v1.13.0 && docker rmi k8s.gcr.io/hyperkube:v1.13.0 > /dev/null"')
-        run('docker-compose -f docker-compose-template.yml build --no-cache kube')
-    elif args.c2:
-        run('docker-compose -f docker-compose-template.yml build --no-cache ' + args.c2)
-    else:
-        print "Caching Hyperkube image"
-        run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:v1.13.0 && docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:v1.13.0 && docker rmi k8s.gcr.io/hyperkube:v1.13.0 > /dev/null"')
-        run('docker-compose -f docker-compose-template.yml build --no-cache')
+  args.c2 = args.c2 or ''
+  if args.c2 == 'kube' or args.c2 == '':
+    if not os.path.isfile('kube/hyperkube.tar'):
+      print "Caching Hyperkube image"
+      run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:v1.13.0 && docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:v1.13.0 && docker rmi k8s.gcr.io/hyperkube:v1.13.0 > /dev/null"')
+  run('docker-compose -f docker-compose-template.yml build --no-cache ' + args.c2)
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
