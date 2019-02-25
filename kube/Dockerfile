@@ -22,8 +22,6 @@ RUN apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-get clea
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 RUN helm init --client-only
 
-COPY ms-ports /usr/bin/ms-ports
-RUN chmod +x /usr/bin/ms-ports
 COPY hyperkube.tar .
 COPY config.yaml .
 COPY init.sh .
