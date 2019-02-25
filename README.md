@@ -18,7 +18,7 @@ This will take a few minutes. Running this again is only required to pull update
 
 Initialize the environment with `./minislate init`
 
-__TIP:__ Access local directories by mapping them into the SLATE container: `./minislate -v ~/WorkDir:/mnt`
+__TIP:__ Access local directories by mapping them into the SLATE container: `./minislate init -v ~/WorkDir:/mnt`
 
 [Utilize SLATE](http://slateci.io/docs/quickstart/slate-client.html) with `./minislate slate ...(cluster list, vo list, etc)...`
 Or shell into the container and run it "natively":
