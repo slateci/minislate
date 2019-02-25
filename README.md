@@ -1,64 +1,39 @@
 # MiniSLATE
-
-This project is a local distribution of the [SLATE project](http://slateci.io/) with a single Kubernetes node.
-
-This project utilizes a 'docker-in-docker' architecture. The entire environment is enclosed in Docker containers, including Kubernetes.
-
-The primary purpose of this project is to provide a local development environment for SLATE applications with minimal host dependencies and less resources than VMs.
+This project provides a local development environment for the [SLATE project](http://slateci.io/).
 
 ## Minimum Requirements
+- Linux (2 cores, 4GB memory, 15GB storage) or MacOS
+- Python (3 or 2.7, 'python' must be in your PATH)
+- [DockerCE](https://docs.docker.com/install/#supported-platforms)
+- [Docker-Compose](https://github.com/docker/compose/releases) (installed with Docker for Mac)
 
-MiniSLATE runs on Linux and MacOS.
+On Linux, the user running MiniSLATE must be a member of the Docker group (or root).
+Users can be added to the Docker group with: `sudo usermod -a -G docker <username>`
 
-It is recommended Linux systems have 2 core CPU and 4GB RAM for minimum reasonable performance.
+## Getting Started
+After installing the dependency requirements and pulling the MiniSLATE repository:
 
-Reasonably modern Mac computers should be adequate.
+Build the container images with	`./minislate build` 
+This will take a few minutes. Running this again is only required to pull updates to software.
 
-At least 10GB available disk is recommended. Kubernetes will take up a few GB alone.
+Initialize the environment with `./minislate init`
 
-## Install Dependencies
+__TIP:__ Access local directories by mapping them into the SLATE container: `./minislate init -v ~/WorkDir:/mnt`
 
-### Docker CE:
-
-Docker CE on CentOS: https://docs.docker.com/install/linux/docker-ce/centos/
-
-Docker CE on Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
-
-Other Linux operating systems are in the sidebar.
-
-Docker Desktop for MacOS: https://hub.docker.com/editions/community/docker-ce-desktop-mac
-
-### Docker Compose:
-
-MacOS users will have Docker Compose installed automatically with Docker Desktop.
-
-On Linux use [pip](https://github.com/pypa/pip). It can be installed with your package manager or [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
-
-Then run: `(sudo) pip install docker-compose`
-
-### SLATE Docker Images:
-
-Inside the project directory run: `./minislate build`
-
-This will take a minute or so. It is pulling container dependencies and the SLATE project.
-
-## Usage
-
-Run `./minislate init` to spin up the containers for the MiniSLATE environment and install Kubernetes.
-
-**NOTE:** Docker-style ports and volumes can be passed: `./minislate init -p 3000:3000 -v ~/WorkDir:/mnt`
-
-When the process is complete you can issue commands from the slate client in a new terminal:
-
-`./minislate slate ...(cluster list, vo list, etc)...`
-
-You can also just get a shell in the slate container with: `./minislate shell slate`
-
-To pause/suspend the environment run: `./minislate pause`
-Then turn it back on with: `./minislate unpause`
+[Utilize SLATE](http://slateci.io/docs/quickstart/slate-client.html) with `./minislate slate ...(cluster list, vo list, etc)...`
+Or shell into the container and run it "natively":
+```
+$ ./minislate shell slate
+# slate ...(cluster list, vo list, etc)...
+```
 
 To **completely destroy** the environment such that it can be created again run: `./minislate destroy`
 
-`./minislate build` can be run again before re-initializing the environment with `./minislate init`
+## Internal Details
+MiniSLATE is a docker-compose orchestrated standard SLATE deployment (with a couple performance tweaks for personal machines).
 
-`./minislate build` will always pull the latest releases of the SLATE software.
+MiniSLATE spins up 4 containers with docker-compose. These include:
+- [A docker-in-docker Kubernetes node](https://github.com/slateci/minislate/blob/master/kube/Dockerfile)
+- [A SLATE management container](https://github.com/slateci/minislate/blob/master/slate/Dockerfile)
+- [A DynamoDB container](https://hub.docker.com/r/dwmkerr/dynamodb) used by the SLATE API server
+- [A storage container simulating an NFS share](https://hub.docker.com/r/itsthenetwork/nfs-server-alpine)
