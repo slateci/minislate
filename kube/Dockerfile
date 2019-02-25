@@ -12,7 +12,7 @@ RUN apt-get update -qq && apt-get install -qqy \
     lxc \
     iptables
 
-RUN curl -sSL https://get.docker.com/ | sh
+RUN curl -sSL https://get.docker.com/ | sh > /dev/null
 
 VOLUME /var/lib/docker
 
