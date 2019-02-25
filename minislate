@@ -83,7 +83,7 @@ if args.c1 == 'init':
     if(run('docker-compose up -d') == 0):
       run('docker-compose exec kube ./init.sh')
       run('docker-compose exec slate ./init.sh')
-      print "DONE! MiniSLATE is now initialized."
+      print("DONE! MiniSLATE is now initialized.")
 elif args.c1 == 'pause':
   initcheck()
   readycheck(rdyerr='It appears MiniSLATE is already paused.')
@@ -108,7 +108,7 @@ elif args.c1 == 'build':
   args.c2 = args.c2 or ''
   if args.c2 == 'kube' or args.c2 == '':
     if not os.path.isfile('kube/hyperkube.tar'):
-      print "Caching Hyperkube image"
+      print("Caching Hyperkube image")
       run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:v1.13.0 && \
       docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:v1.13.0 && \
       docker rmi k8s.gcr.io/hyperkube:v1.13.0 > /dev/null"')
