@@ -17,6 +17,7 @@ Build the container images with	`./minislate build`
 This will take a few minutes. Running this again is only required to pull updates to software.
 
 Initialize the environment with `./minislate init`
+
 __TIP:__ Access local directories by mapping them into the SLATE container: `./minislate -v ~/WorkDir:/mnt`
 
 [Utilize SLATE](http://slateci.io/docs/quickstart/slate-client.html) with `./minislate slate ...(cluster list, vo list, etc)...`
