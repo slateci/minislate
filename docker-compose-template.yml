@@ -17,7 +17,6 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     ports:
       - 8080:80
-      - 6443:6443
       - 30000-30100:30000-30100
 # {PORTS}
   nfs:
