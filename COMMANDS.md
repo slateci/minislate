@@ -89,8 +89,7 @@ __kubectl_command__ - A valid kubectl command (e.g. `./minislate kubectl get nod
 ### Exec
 Run any command from the host in a selected container
 ```
-$ ./minislate exec kube uname -a
-Linux 94e8d4e49d3d 4.10.0-28-generic #32~16.04.2-Ubuntu SMP Thu Jul 20 10:19:48 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+$ ./minislate exec {container_name} {command}
 ```
 _Required Arguments_:
 
