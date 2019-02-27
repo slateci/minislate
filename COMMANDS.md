@@ -8,6 +8,7 @@ Build/rebuild container images
 $ ./minislate build [container_name]
 ```
 _Optional Argument_:
+
 __container_name__ [slate or kube] - builds a single container image as opposed to all
 
 ### Init
@@ -16,7 +17,9 @@ Initialize minislate containers
 $ ./minislate init [-v localDir:containerDir] [-p localPort:containerPort]
 ```
 _Optional Arguments_:
+
 __volume__ [-v, --volume] - Create a Docker volume of a local directory to a directory in the SLATE container (e.g. `-v ~/WorkDir:/mnt`)
+
 __publish__ [-p, --publish, --port] - Publish a port in the Kubernetes container to the host (e.g. `-p 3000:80`)
 
 ### Status
@@ -39,6 +42,7 @@ user@host$ ./minislate shell {container_name}
 root@container_id# 
 ```
 _Required Argument_:
+
 __container_name__ [slate or kube] - the container to open a shell within
 
 ### Slate
@@ -47,6 +51,7 @@ Run a SLATE command
 ./minislate slate {slate_command}
 ```
 _Required Argument_:
+
 __slate_command__ - A valid SLATE command (e.g. `./minislate slate vo list`)
 
 ### Destroy
@@ -55,6 +60,7 @@ Completely destroy the MiniSLATE environment
 ./minislate destroy
 ```
 _Optional Argument_:
+
 __-\-rmi__ - Also remove the built images (they will be rebuilt on next `./minislate init` or manually with `./minislate build`)
 
 ### Pause
@@ -77,6 +83,7 @@ Run a kubectl command from the host in the MiniSLATE environment
 ./minislate kubectl {kubectl_command}
 ```
 _Required Argument_:
+
 __kubectl_command__ - A valid kubectl command (e.g. `./minislate kubectl get nodes`)
 
 ### Exec
@@ -86,5 +93,7 @@ Run any command from the host in a selected container
 Linux 94e8d4e49d3d 4.10.0-28-generic #32~16.04.2-Ubuntu SMP Thu Jul 20 10:19:48 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
 ```
 _Required Arguments_:
+
 __container_name__ [slate or kube] - the container to execute a command within
+
 __command__ - A valid shell command (e.g. `uname -a`)
