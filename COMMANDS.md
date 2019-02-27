@@ -48,7 +48,7 @@ __container_name__ [slate or kube] - the container to open a shell within
 ### Slate
 Run a SLATE command
 ```
-./minislate slate {slate_command}
+$ ./minislate slate {slate_command}
 ```
 _Required Argument_:
 
@@ -57,7 +57,7 @@ __slate_command__ - A valid SLATE command (e.g. `./minislate slate vo list`)
 ### Destroy
 Completely destroy the MiniSLATE environment
 ```
-./minislate destroy
+$ ./minislate destroy
 ```
 _Optional Argument_:
 
@@ -66,21 +66,21 @@ __-\-rmi__ - Also remove the built images (they will be rebuilt on next `./minis
 ### Pause
 Freezes the state of the MiniSLATE environment (helpful to free up host resources or change host state (sleep, reboots, etc.)
 ```
-./minislate pause
+$ ./minislate pause
 ```
 _No Arguments_.
 
 ### Unpause
 Unfreeze the MiniSLATE environment after pausing
 ```
-./minislate unpause
+$ ./minislate unpause
 ```
 _No Arguments_.
 
 ### Kubectl
 Run a kubectl command from the host in the MiniSLATE environment
 ```
-./minislate kubectl {kubectl_command}
+$ ./minislate kubectl {kubectl_command}
 ```
 _Required Argument_:
 
@@ -89,7 +89,7 @@ __kubectl_command__ - A valid kubectl command (e.g. `./minislate kubectl get nod
 ### Exec
 Run any command from the host in a selected container
 ```
-./minislate exec kube uname -a
+$ ./minislate exec kube uname -a
 Linux 94e8d4e49d3d 4.10.0-28-generic #32~16.04.2-Ubuntu SMP Thu Jul 20 10:19:48 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
 ```
 _Required Arguments_:
