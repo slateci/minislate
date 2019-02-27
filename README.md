@@ -29,6 +29,8 @@ $ ./minislate shell slate
 
 To **completely destroy** the environment such that it can be created again run: `./minislate destroy`
 
+For a more detailed description of each MiniSLATE command view [COMMANDS.md](https://github.com/slateci/minislate/blob/master/COMMANDS.md)
+
 ## Internal Details
 MiniSLATE is a docker-compose orchestrated standard SLATE deployment (with a couple performance tweaks for personal machines).
 
