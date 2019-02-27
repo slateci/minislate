@@ -57,7 +57,7 @@ __slate_command__ - A valid SLATE command (e.g. `./minislate slate vo list`)
 ### Destroy
 Completely destroy the MiniSLATE environment
 ```
-$ ./minislate destroy
+$ ./minislate destroy [--rmi]
 ```
 _Optional Argument_:
 
