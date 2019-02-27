@@ -26,7 +26,7 @@ shell.add_argument('c2', metavar='container', choices=[
                    'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate shell slate`')
 slate = subparsers.add_parser('slate', help='run a slate command')
 slate.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
-                   help='Example: `./minislate slate vo list`')
+                   help='Example: `./minislate slate group list`')
 kubectl = subparsers.add_parser('kubectl', help='run a kubectl command')
 kubectl.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
                      help='Example: `./minislate kubectl get po --all-namespaces`')
