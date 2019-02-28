@@ -11,7 +11,7 @@ init = subparsers.add_parser('init', help='initialize minislate containers')
 init.add_argument('-p', '--port', '--publish', dest='ports', action='append', nargs='?',
                   metavar='hostPort or hostPort:containerPort', help='Example: `./minislate init -p 3000`')
 init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
-                  metavar='hostDir:containerDir', help='Example: `./minislate init -v ~/workdir:/mnt`')
+                  metavar='hostDir or hostDir:containerDir', help='Example: `./minislate init -v ~/workdir`')
 subparsers.add_parser('pause', help='pause minislate containers')
 subparsers.add_parser('unpause', help='unpause minislate containers')
 destroy = subparsers.add_parser('destroy', help='completely destroy environment')
@@ -69,6 +69,8 @@ if args.c1 == 'init':
             ports.append('      - ' + item)
     if args.volumes:
         for item in args.volumes:
+            if ':' not in item:
+              item = item + ':/mnt/' + os.path.basename(item)
             volumes.append('      - ' + item)
     ports = '\n'.join(ports)
     volumes = '\n'.join(volumes)
