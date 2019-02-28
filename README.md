@@ -21,6 +21,7 @@ Initialize the environment with `./minislate init`
 __TIP:__ Access local directories by mapping them into the SLATE container: `./minislate init -v ~/WorkDir:/mnt`
 
 [Utilize SLATE](http://slateci.io/docs/quickstart/slate-client.html) with `./minislate slate ...(cluster list, group list, etc)...`
+
 Or shell into the container and run it "natively":
 ```
 $ ./minislate shell slate
