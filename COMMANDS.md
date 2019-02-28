@@ -14,11 +14,11 @@ __container_name__ [slate or kube] - builds a single container image as opposed 
 ### Init
 Initialize minislate containers
 ```
-$ ./minislate init [-v localDir:containerDir] [-p localPort:containerPort]
+$ ./minislate init [-v hostDir:containerDir] [-p hostPort:containerPort]
 ```
 _Optional Arguments_:
 
-__volume__ [-v, --volume] - Create a Docker volume of a local directory to a directory in the SLATE container (e.g. `-v ~/WorkDir:/mnt`)
+__volume__ [-v, --volume] - Create a Docker volume of a host directory to a directory in the SLATE container (e.g. `-v ~/WorkDir:/mnt`)
 
 __publish__ [-p, --publish, --port] - Publish a port in the Kubernetes container to the host (e.g. `-p 3000:80`)
 
