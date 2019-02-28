@@ -16,7 +16,6 @@ services:
       - kubernetes:/etc/kubernetes
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     ports:
-      - 8080:80
       - 30000-30100:30000-30100
 # {PORTS}
   nfs:
