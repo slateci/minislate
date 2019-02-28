@@ -83,7 +83,7 @@ if args.c1 == 'init':
     if(run('docker-compose up -d') == 0):
       run('docker-compose exec kube ./init.sh')
       run('docker-compose exec slate ./init.sh')
-      print("DONE! MiniSLATE is now initialized.")
+      print('\033[1m'+"DONE! MiniSLATE is now initialized."+'\033[0m')
 elif args.c1 == 'pause':
   initcheck()
   readycheck(rdyerr='It appears MiniSLATE is already paused.')
