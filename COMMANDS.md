@@ -61,9 +61,11 @@ __slate_command__ - A valid SLATE command (e.g. `./minislate slate vo list`)
 ### Destroy
 Completely destroy the MiniSLATE environment
 ```
-$ ./minislate destroy [--rmi]
+$ ./minislate destroy [-y] [--rmi]
 ```
-_Optional Argument_:
+_Optional Arguments_:
+
+__-y__ - Assume yes for prompt to confirm destroy
 
 __-\-rmi__ - Also remove the built images (they will be rebuilt on next `./minislate init` or manually with `./minislate build`)
 
