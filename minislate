@@ -72,7 +72,7 @@ if args.c1 == 'init':
             volumes.append('      - ' + item)
     ports = '\n'.join(ports)
     volumes = '\n'.join(volumes)
-    with open('docker-compose-template.yml', 'r') as file:
+    with open('docker-compose.yml.tmpl', 'r') as file:
         contents = file.read()
     contents = contents.replace('# {PORTS}', ports)
     contents = contents.replace('# {VOLUMES}', volumes)
@@ -112,7 +112,7 @@ elif args.c1 == 'build':
       run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:v1.13.0 && \
       docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:v1.13.0 && \
       docker rmi k8s.gcr.io/hyperkube:v1.13.0 > /dev/null"')
-  run('docker-compose -f docker-compose-template.yml build --no-cache ' + args.c2)
+  run('docker-compose -f docker-compose.yml.tmpl build --no-cache ' + args.c2)
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
