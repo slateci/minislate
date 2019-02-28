@@ -5,6 +5,8 @@ import subprocess
 import argparse
 import os
 
+KUBEVER = 'v1.13.4'
+
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="commands", dest="c1")
 init = subparsers.add_parser('init', help='initialize minislate containers')
@@ -116,16 +118,21 @@ elif args.c1 == 'destroy':
             run('docker-compose down -v --rmi local')
         else:
             run('docker-compose down -v')
-        os.remove('docker-compose.yml')
+        try:
+            os.remove('docker-compose.yml')
+        except OSError:
+            pass
 elif args.c1 == 'build':
   args.c2 = args.c2 or ''
   if args.c2 == 'kube' or args.c2 == '':
-    if not os.path.isfile('kube/hyperkube.tar'):
       print("Caching Hyperkube image")
-      run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:v1.13.4 && \
-      docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:v1.13.4 && \
-      docker rmi k8s.gcr.io/hyperkube:v1.13.4 > /dev/null"')
+      run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:' + KUBEVER + ' && \
+      docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:' + KUBEVER + '"')
   run('docker-compose -f docker-compose.yml.tmpl build --no-cache ' + args.c2)
+  try:
+      os.remove('kube/hyperkube.tar')
+  except OSError:
+      pass
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
