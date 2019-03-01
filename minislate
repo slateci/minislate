@@ -85,6 +85,10 @@ if args.c1 == 'init':
         file.write(contents)
         file.flush()
         os.fsync(file)
+    try:
+      run('docker-compose -v')
+    except:
+      raise EnvironmentError('Could not run docker-compose. Is it installed?')
     if(run('docker-compose up -d') == 0):
       run('docker-compose exec kube ./init.sh')
       run('docker-compose exec slate ./init.sh')
