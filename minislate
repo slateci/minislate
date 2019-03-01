@@ -65,6 +65,9 @@ if args.c1 == 'init':
     if os.path.isfile('docker-compose.yml'):
         raise EnvironmentError(
             'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
+    print("Caching Hyperkube image")
+    run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:' + KUBEVER + ' && \
+      docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:' + KUBEVER + '"')
     ports = []
     volumes = []
     if args.ports:
@@ -90,6 +93,10 @@ if args.c1 == 'init':
     except:
       raise EnvironmentError('Could not run docker-compose. Is it installed?')
     if(run('docker-compose up -d') == 0):
+      try:
+        os.remove('kube/hyperkube.tar')
+      except OSError:
+        pass
       run('docker-compose exec kube ./init.sh')
       run('docker-compose exec slate ./init.sh')
       print('\033[1m'+"DONE! MiniSLATE is now initialized."+'\033[0m')
