@@ -98,9 +98,8 @@ if args.c1 == 'init':
         os.remove('kube/hyperkube.tar')
       except OSError:
         pass
-      run('docker-compose exec kube ./init.sh')
-      run('docker-compose exec slate ./init.sh')
-      print('\033[1m'+"DONE! MiniSLATE is now initialized."+'\033[0m')
+      if(run('docker-compose exec kube ./init.sh') == 0 and run('docker-compose exec slate ./init.sh') == 0):
+        print('\033[1m'+"DONE! MiniSLATE is now initialized."+'\033[0m')
 elif args.c1 == 'pause':
   initcheck()
   readycheck(rdyerr='It appears MiniSLATE is already paused.')
