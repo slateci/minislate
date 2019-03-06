@@ -13,6 +13,8 @@ Users can be added to the Docker group with: `sudo usermod -a -G docker <usernam
 ## Getting Started
 After installing the dependency requirements and pulling the MiniSLATE repository:
 
+Make sure your Docker is running.
+
 Build the container images with	`./minislate build` 
 This will take a few minutes. Running this again is only required to pull updates to software.
 
