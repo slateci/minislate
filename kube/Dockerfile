@@ -13,6 +13,8 @@ RUN apt-get update -qq && apt-get install -qqy \
     iptables \
     gnupg-agent
 
+VOLUME /var/lib/docker
+
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 RUN echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' > /etc/apt/sources.list.d/docker-ce.list
 RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
