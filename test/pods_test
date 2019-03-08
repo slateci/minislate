@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+import sys
+
+passes = True
+
+for line in sys.stdin:
+    #sys.stdout.write(line)
+    a = line.split(',')
+
+    #get second value and strip new line character
+    status = a[1].strip() 
+
+    #skip title line
+    if status != "Status":
+        continue
+
+    #ensure each pod is Running
+    if status != "Running":
+        passes = False
+    
+if passes == False:
+    print "FAIL"
+else:
+    print "PASS"
+
+
