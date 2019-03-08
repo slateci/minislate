@@ -73,7 +73,7 @@ for i, line in enumerate(sys.stdin):
     if status != "Running":
         passes = False
 
-# verify ever pod is accounted for
+# verify every pod is accounted for
 if pods['calico-etcd'] != 1:
     passes = False
 if pods['calico-kube-controllers'] != 1:
@@ -99,6 +99,7 @@ if pods['storage-provisioner'] != 1:
 if pods['tiller-deploy'] != 1:
     passes = False
     
+# print result    
 if passes == False:
     print "FAIL"
 else:
