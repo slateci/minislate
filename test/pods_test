@@ -1,35 +1,105 @@
 #!/usr/bin/env python
 
 import sys
+import re
 
 passes = True
 count = 0
 
-for line in sys.stdin:
+# these pods must be present
+pods = {
+    'calico-etcd': 0,
+    'calico-kube-controllers': 0,
+    'calico-node': 0,
+    'coredns': 0,
+    'etcd': 0,
+    'nfs-client-provisioner': 0,
+    'kube-apiserver': 0,
+    'kube-controller-manager': 0,
+    'kube-proxy': 0,
+    'kube-scheduler': 0,
+    'nrp-controller': 0,
+    'storage-provisioner': 0,
+    'tiller-deploy': 0
+}        
+
+for i, line in enumerate(sys.stdin):
+    if i == 0:
+        if line.strip() == "NAME,STATUS":
+            continue
+        else:
+            passes = False
+            break
+
+    count += 1
+
     #sys.stdout.write(line)
     a = line.split(',')
+
+    # increment pod count in dictionary
+    if 'calico-etcd' in a[0]:
+        pods['calico-etcd'] += 1
+    if 'calico-kube-controllers' in a[0]:
+        pods['calico-kube-controllers'] += 1
+    if 'calico-node' in a[0]:
+        pods['calico-node'] += 1
+    if 'coredns' in a[0]:
+        pods['coredns'] += 1
+    if 'nfs-client-provisioner' in a[0]:
+        pods['nfs-client-provisioner'] += 1
+    if 'kube-apiserver' in a[0]:
+        pods['kube-apiserver'] += 1
+    if 'kube-controller-manager' in a[0]:
+        pods['kube-controller-manager'] += 1
+    if 'kube-proxy' in a[0]:
+        pods['kube-proxy'] += 1
+    if 'kube-scheduler' in a[0]:
+        pods['kube-scheduler'] += 1
+    if 'nrp-controller' in a[0]:
+        pods['nrp-controller'] += 1
+    if 'storage-provisioner' in a[0]:
+        pods['storage-provisioner'] += 1
+    if 'tiller-deploy' in a[0]:
+        pods['tiller-deploy'] += 1
+    # test for etcd- with regex due to calico-ectd false positive
+    isEtcd = re.search("^etcd-", a[0])
+    if isEtcd:
+        pods['etcd'] += 1
 
     #get second value and strip new line character
     status = a[1].strip() 
 
-    #skip title line
-    if status == "STATUS":
-        continue
-
-    count = count + 1
-    print count
     #ensure each pod is Running
     if status != "Running":
         passes = False
-    
-if count < 14:
+
+# verify ever pod is accounted for
+if pods['calico-etcd'] != 1:
     passes = False
-
-print count
-
+if pods['calico-kube-controllers'] != 1:
+    passes = False
+if pods['calico-node'] != 1:
+    passes = False
+if pods['coredns'] != 2:
+    passes = False
+if pods['nfs-client-provisioner'] != 1:
+    passes = False
+if pods['kube-apiserver'] != 1:
+    passes = False
+if pods['kube-controller-manager'] != 1:
+    passes = False
+if pods['kube-proxy'] != 1:
+    passes = False
+if pods['kube-scheduler'] != 1:
+    passes = False
+if pods['nrp-controller'] != 1:
+    passes = False
+if pods['storage-provisioner'] != 1:
+    passes = False
+if pods['tiller-deploy'] != 1:
+    passes = False
+    
 if passes == False:
     print "FAIL"
 else:
     print "PASS"
-
-
