@@ -3,6 +3,7 @@
 import sys
 
 passes = True
+count = 0
 
 for line in sys.stdin:
     #sys.stdout.write(line)
@@ -12,13 +13,20 @@ for line in sys.stdin:
     status = a[1].strip() 
 
     #skip title line
-    if status != "Status":
+    if status == "STATUS":
         continue
 
+    count = count + 1
+    print count
     #ensure each pod is Running
     if status != "Running":
         passes = False
     
+if count < 14:
+    passes = False
+
+print count
+
 if passes == False:
     print "FAIL"
 else:
