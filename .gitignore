@@ -1,2 +1,2 @@
-docker-compose.yml
-kube/hyperkube.tar
+/docker-compose.yml
+/kube/hyperkube.tar
