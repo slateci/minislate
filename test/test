@@ -1,5 +1,5 @@
 #!/bin/sh
-
+set -e
 ./minislate build
 ./minislate init
 echo
