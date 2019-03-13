@@ -1,4 +1,4 @@
-FROM docker:dind
+FROM docker:stable-dind
 
 WORKDIR /minislate
 RUN apk update && apk add --no-cache python3 py3-pip
