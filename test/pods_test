@@ -104,6 +104,6 @@ if pods['tiller-deploy'] != 1:
     
 # print result    
 if passes == False:
-    print "FAIL"
+    print("FAIL")
 else:
-    print "PASS"
+    print("PASS")
