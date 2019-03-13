@@ -1,0 +1,4 @@
+MINISLATE=$(pwd)/minislate
+alias minislate='$MINISLATE'
+alias slate='$MINISLATE slate'
+alias kubectl='$MINISLATE kubectl'
