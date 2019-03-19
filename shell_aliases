@@ -1,4 +1,5 @@
-MINISLATE=$(dirname $(realpath $0))/minislate
+cd $(dirname $0)
+MINISLATE=$(pwd -P)/minislate
 alias minislate='$MINISLATE'
 alias slate='$MINISLATE slate'
 alias kubectl='$MINISLATE kubectl'
