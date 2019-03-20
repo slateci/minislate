@@ -28,7 +28,7 @@ WORKDIR /opt/slate-portal
 RUN rm -rf /src
 RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python
 RUN pip install virtualenv
-RUN git clone https://github.com/slateci/prototype-portal.git .
+RUN git clone https://github.com/slateci/slate-portal.git .
 RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
 
 WORKDIR /
