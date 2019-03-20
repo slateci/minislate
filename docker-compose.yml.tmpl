@@ -9,8 +9,6 @@ services:
     restart: always
     tty: true
     privileged: true
-    cap_add:
-      - ALL
     volumes:
       - /lib/modules:/lib/modules
       - kubernetes:/etc/kubernetes
