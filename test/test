@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+./minislate build
+./minislate init
+echo
+printf "ALL PODS UP: "
+./minislate kubectl get pods -n kube-system | awk '{print $1 "," $3}' | test/pods_test

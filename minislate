@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 from shlex import split
+from sys import exit
 import subprocess
 import argparse
 import os
@@ -21,6 +22,7 @@ destroy = subparsers.add_parser('destroy', help='completely destroy environment'
 destroy.add_argument('--rmi', dest='rmi', action='store_true', help='Example: `./minislate destroy --rmi`')
 destroy.add_argument('-y', dest='confirm', action='store_true', help='Example: `./minislate destroy -y`')
 subparsers.add_parser('status', help='view status of minislate containers')
+subparsers.add_parser('test', help='run test of the minislate environment')
 build = subparsers.add_parser('build', help='build/rebuild container images')
 build.add_argument('c2', metavar='container', nargs='?', choices=[
                    'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate build slate`')
@@ -151,6 +153,18 @@ elif args.c1 == 'shell':
 elif args.c1 == 'status':
   initcheck()
   run('docker-compose ps')
+elif args.c1 == 'test':
+  if os.path.isfile('docker-compose.yml'):
+    raise EnvironmentError("Can not run tests on existing environment. Please destroy your environment to run tests.")
+  run('docker-compose -f docker-compose-test.yml up -d')
+  result = run('docker-compose -f docker-compose-test.yml exec test /minislate/test/test')
+  run('docker-compose -f docker-compose-test.yml kill -s SIGKILL test')
+  run('docker-compose -f docker-compose-test.yml down -v')
+  try:
+    os.remove('docker-compose.yml')
+  except OSError:
+    pass
+  exit(result)
 elif args.c1 == 'slate':
   initcheck()
   readycheck()
