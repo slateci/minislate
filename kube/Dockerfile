@@ -27,4 +27,5 @@ COPY hyperkube.tar .
 COPY config.yaml .
 COPY init.sh .
 RUN chmod +x init.sh
+EXPOSE 30000-30100
 CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]

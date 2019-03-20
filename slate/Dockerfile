@@ -40,4 +40,5 @@ RUN chmod -R 600 /root/.slate
 
 COPY slate_portal_user /
 COPY init.sh /
+EXPOSE 5000 51000 18080
 RUN chmod +x init.sh
