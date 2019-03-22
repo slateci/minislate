@@ -7,7 +7,6 @@ import argparse
 import sys
 import os
 
-sys.tracebacklimit = 0
 KUBEVER = 'v1.13.4'
 
 parser = argparse.ArgumentParser()
@@ -49,6 +48,10 @@ try:
 except ImportError:
     DEVNULL = open(os.devnull, 'wb')
 
+def exception_handler(exception_type, exception, traceback):
+    print(exception)
+
+sys.excepthook = exception_handler
 
 def initcheck(initerr='MiniSLATE is not initialized. Run: `./minislate init`'):
     if not os.path.isfile('docker-compose.yml'):
