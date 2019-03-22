@@ -2,11 +2,12 @@
 
 from __future__ import print_function
 from shlex import split
-from sys import exit
 import subprocess
 import argparse
+import sys
 import os
 
+sys.tracebacklimit = 0
 KUBEVER = 'v1.13.4'
 
 parser = argparse.ArgumentParser()
@@ -22,7 +23,9 @@ destroy = subparsers.add_parser('destroy', help='completely destroy environment'
 destroy.add_argument('--rmi', dest='rmi', action='store_true', help='Example: `./minislate destroy --rmi`')
 destroy.add_argument('-y', dest='confirm', action='store_true', help='Example: `./minislate destroy -y`')
 subparsers.add_parser('status', help='view status of minislate containers')
-subparsers.add_parser('test', help='run test of the minislate environment')
+test = subparsers.add_parser('test', help='run test of the minislate environment')
+test.add_argument('--debug', dest='debug', action='store_true', help='Example: `./minislate test --debug`')
+test.add_argument('--kill', dest='kill', action='store_true', help='Example: `./minislate test --kill`')
 build = subparsers.add_parser('build', help='build/rebuild container images')
 build.add_argument('c2', metavar='container', nargs='?', choices=[
                    'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate build slate`')
@@ -63,6 +66,14 @@ def readycheck(rdyerr='MiniSLATE has non-ready containers. Is the environment pa
 def run(cmd):
   return subprocess.call(split(cmd))
 
+
+def testkill():
+  run('docker-compose -f docker-compose-test.yml kill -s SIGKILL test')
+  run('docker-compose -f docker-compose-test.yml down -v')
+  try:
+    os.remove('docker-compose.yml')
+  except OSError:
+    pass
 
 if args.c1 == 'init':
     if os.path.isfile('docker-compose.yml'):
@@ -156,17 +167,19 @@ elif args.c1 == 'status':
   initcheck()
   run('docker-compose ps')
 elif args.c1 == 'test':
-  if os.path.isfile('docker-compose.yml'):
-    raise EnvironmentError("Can not run tests on existing environment. Please destroy your environment to run tests.")
-  run('docker-compose -f docker-compose-test.yml up -d')
-  result = run('docker-compose -f docker-compose-test.yml exec test /minislate/test/test')
-  run('docker-compose -f docker-compose-test.yml kill -s SIGKILL test')
-  run('docker-compose -f docker-compose-test.yml down -v')
-  try:
-    os.remove('docker-compose.yml')
-  except OSError:
-    pass
-  exit(result)
+  if args.kill:
+    testkill()
+  else:
+    if os.path.isfile('docker-compose.yml'):
+      raise EnvironmentError("Can not run tests on existing environment. Please destroy your environment to run tests.")
+    run('docker-compose -f docker-compose-test.yml up -d')
+    result = run('docker-compose -f docker-compose-test.yml exec test /minislate/test/test')
+    if args.debug:
+      print('Entering debug mode...')
+      print('Exiting this shell will destroy the test environment')
+      run('docker-compose -f docker-compose-test.yml exec test /bin/sh')
+    testkill()
+    sys.exit(result)
 elif args.c1 == 'slate':
   initcheck()
   readycheck()
