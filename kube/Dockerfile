@@ -19,7 +19,7 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 RUN echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' > /etc/apt/sources.list.d/docker-ce.list
 RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list
-RUN apt-get update && apt-get install -y docker-ce kubelet kubeadm kubectl && apt-get clean
+RUN apt-get update && apt-get install -y docker-ce kubelet=1.14.0-00 kubeadm=1.14.0-00 kubectl=1.14.0-00 && apt-get clean
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 RUN helm init --client-only
 
