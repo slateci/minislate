@@ -114,7 +114,7 @@ if args.c1 == 'init':
         os.remove('kube/hyperkube.tar')
       except OSError:
         pass
-      if(run('docker-compose exec -T kube ./init.sh') == 0 and run('docker-compose exec -T slate ./init.sh') == 0):
+      if(run('docker-compose exec kube ./init.sh') == 0 and run('docker-compose exec slate ./init.sh') == 0):
         if volumes:
           print('\033[1m'+"Volume Mounts:"+'\033[0m'+'\n'+volumes)
         print('\n'+'\033[1m'+"DONE! MiniSLATE is now initialized."+'\033[0m')
@@ -176,7 +176,7 @@ elif args.c1 == 'test':
     if os.path.isfile('docker-compose.yml'):
       raise EnvironmentError("Can not run tests on existing environment. Please destroy your environment to run tests.")
     run('docker-compose -f docker-compose-test.yml up -d --build')
-    result = run('docker-compose -f docker-compose-test.yml exec -T test /minislate/test/test')
+    result = run('docker-compose -f docker-compose-test.yml exec test /minislate/test/test')
     if args.debug:
       print('Entering debug mode...')
       print('Exiting this shell will destroy the test environment')
