@@ -21,6 +21,3 @@ systemctl restart kubelet
 # Tiller (Helm)
 kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-# Default hostPath StorageClass
-#kubectl apply -f https://github.com/kubernetes/minikube/raw/master/deploy/addons/storage-provisioner/storage-provisioner.yaml
-#kubectl apply -f https://github.com/kubernetes/minikube/raw/master/deploy/addons/storageclass/storageclass.yaml
