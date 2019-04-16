@@ -3,7 +3,6 @@ set -e
 # DNS for kubelet
 echo "DNS=8.8.8.8" >> /etc/systemd/resolved.conf
 echo "FallbackDNS=8.8.4.4" >> /etc/systemd/resolved.conf
-echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 systemctl restart systemd-resolved
 systemctl restart kubelet
 # Import cached hyperkube image

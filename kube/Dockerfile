@@ -23,6 +23,9 @@ RUN apt-get update && apt-get install -y docker-ce kubelet=1.14.0-00 kubeadm=1.1
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 RUN helm init --client-only
 
+# Increase vm.max_map_count, originally for elasticsearch
+RUN echo "vm.max_map_count=262144" >> /etc/sysctl.conf
+
 COPY hyperkube.tar .
 COPY config.yaml .
 COPY init.sh .
