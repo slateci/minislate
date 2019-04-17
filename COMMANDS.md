@@ -102,3 +102,10 @@ _Required Arguments_:
 __container_name__ [slate or kube] - the container to execute a command within
 
 __command__ - A valid shell command (e.g. `uname -a`)
+
+### Reload-Catalog
+Reload the catalog from the SLATE stable/incubator repositories
+```
+$ ./minislate reload-catalog
+```
+_No Arguments_.
