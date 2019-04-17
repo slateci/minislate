@@ -41,6 +41,7 @@ kubectl.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
 exec_ = subparsers.add_parser('exec', help='wrapper of "docker-compose exec"')
 exec_.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
                    help='Example: `./minislate exec kube ip addr`')
+subparsers.add_parser('reload-catalog', help='reload production slate catalog')
 args = parser.parse_args()
 
 try:
@@ -199,6 +200,13 @@ elif args.c1 == 'exec':
   readycheck()
   c2 = ' '.join(args.c2)
   run('docker-compose exec ' + c2)
+elif args.c1 == 'reload-catalog':
+  initcheck()
+  readycheck()
+  if(run('docker-compose exec slate sh -c "curl --fail -X POST $(cat ~/.slate/endpoint)/v1alpha3/update_apps?token=$(cat ~/.slate/token)"') == 0):
+    print("SLATE Catalog has been reloaded.")
+  else:
+    print("SLATE Catalog reload failed.")
 else:
   args.c1 = args.c1 or ''
   raise ValueError('Invalid argument: ' + args.c1)
