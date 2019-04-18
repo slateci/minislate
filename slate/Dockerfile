@@ -8,7 +8,6 @@ COPY kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 COPY slate-server.repo /etc/yum.repos.d/slate-server.repo
 RUN yum install -y epel-release
 RUN yum install -y ca-certificates git vim which kubectl boost zlib openssl libcurl openssl gcc python-devel
-RUN yum clean all && rm -rf /var/cache/yum
 
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | sh
 
@@ -21,6 +20,8 @@ RUN curl -s -O http://jenkins.slateci.io/artifacts/static/aws-sdk-cpp-dynamodb-l
 RUN yum install -y aws-sdk-cpp-dynamodb-libs-1.7.25-1.el7.centos.x86_64.rpm
 
 RUN yum install -y slate-api-server
+
+RUN yum clean all && rm -rf /var/cache/yum
 
 WORKDIR /opt/slate-portal
 RUN rm -rf /src
