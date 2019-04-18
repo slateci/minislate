@@ -13,6 +13,7 @@ RUN apt-get update -qq && apt-get install -qqy \
     iptables \
     gnupg-agent
 
+# This directory needs to be on a "real" filesystem, so it is volumed to the host
 VOLUME /var/lib/docker
 
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
