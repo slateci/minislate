@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+from random import randint
 from shlex import split
 import subprocess
 import argparse
-import random
 import sys
 import os
 
@@ -229,7 +229,7 @@ elif args.c1 == 'proxy':
     exitcode = 0
     port = 0
     while(exitcode < 1):
-      port = str(random.randint(30100,30201))
+      port = str(randint(30100,30201))
       exitcode = run('docker-compose exec kube lsof -i :'+ port)
     run('docker-compose exec -d kube socat TCP-LISTEN:'+port+' TCP:'+args.address)
     print(args.address+' is now accessible via port '+port+' on your host')
