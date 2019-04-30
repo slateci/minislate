@@ -4,6 +4,7 @@ from __future__ import print_function
 from shlex import split
 import subprocess
 import argparse
+import random
 import sys
 import os
 
@@ -42,6 +43,11 @@ exec_ = subparsers.add_parser('exec', help='wrapper of "docker-compose exec"')
 exec_.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
                    help='Example: `./minislate exec kube ip addr`')
 subparsers.add_parser('reload-catalog', help='reload production slate catalog')
+proxy = subparsers.add_parser('proxy', help='proxy an internal socket address to the host')
+proxygroup = proxy.add_mutually_exclusive_group()
+proxygroup.add_argument('--list', dest='list', action='store_true', help='Example: `./minislate proxy list`')
+proxygroup.add_argument('--rm', metavar='pid', dest='pid', nargs='?', help='remove a proxy already in place by its PID')
+proxygroup.add_argument('address', metavar='address', nargs='?', help='socket address in kube container, likely a load balancer')
 args = parser.parse_args()
 
 try:
@@ -207,6 +213,26 @@ elif args.c1 == 'reload-catalog':
     print("SLATE Catalog has been reloaded.")
   else:
     print("SLATE Catalog reload failed.")
+elif args.c1 == 'proxy':
+  if args.pid:
+    run('docker-compose exec kube kill '+args.pid)
+  elif args.list:
+    listing = "No proxies found"
+    try:
+      listing = subprocess.check_output(split('docker-compose exec kube /bin/sh -c "ps --headers a o pid,cmd | grep -E \'socat|PID\' | grep -v grep"'))
+    except subprocess.CalledProcessError:
+      pass
+    print(listing)
+  else:
+    initcheck()
+    readycheck()
+    exitcode = 0
+    port = 0
+    while(exitcode < 1):
+      port = str(random.randint(30100,30201))
+      exitcode = run('docker-compose exec kube lsof -i :'+ port)
+    run('docker-compose exec -d kube socat TCP-LISTEN:'+port+' TCP:'+args.address)
+    print(args.address+' is now accessible via port '+port+' on your host')
 else:
   args.c1 = args.c1 or ''
   raise ValueError('Invalid argument: ' + args.c1)

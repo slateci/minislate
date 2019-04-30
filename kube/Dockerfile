@@ -11,7 +11,8 @@ RUN apt-get update -qq && apt-get install -qqy \
     curl \
     lxc \
     iptables \
-    gnupg-agent
+    gnupg-agent \
+    lsof
 
 # This directory needs to be on a "real" filesystem, so it is volumed to the host
 VOLUME /var/lib/docker
