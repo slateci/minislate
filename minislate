@@ -219,7 +219,7 @@ elif args.c1 == 'proxy':
   elif args.list:
     listing = "No proxies found"
     try:
-      listing = subprocess.check_output(split('docker-compose exec kube /bin/sh -c "ps --headers a o pid,cmd | grep -E \'socat|PID\' | grep -v grep"'))
+      listing = subprocess.check_output(split('docker-compose exec kube /bin/sh -c "ps --headers a o pid,cmd | grep -E \'socat|PID\' | grep -E \'while|PID\' | grep -v grep"'))
     except subprocess.CalledProcessError:
       pass
     print(listing)
@@ -231,7 +231,7 @@ elif args.c1 == 'proxy':
     while(exitcode < 1):
       port = str(randint(30100,30201))
       exitcode = run('docker-compose exec kube lsof -i :'+ port)
-    run('docker-compose exec -d kube socat TCP-LISTEN:'+port+' TCP:'+args.address)
+    run('docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:'+port+' TCP:'+args.address+'; done"')
     print(args.address+' is now accessible via port '+port+' on your host')
 else:
   args.c1 = args.c1 or ''
