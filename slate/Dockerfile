@@ -7,7 +7,7 @@ WORKDIR /src
 COPY kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 COPY slate-server.repo /etc/yum.repos.d/slate-server.repo
 RUN yum install -y epel-release
-RUN yum install -y ca-certificates git vim which kubectl boost zlib openssl libcurl openssl gcc python-devel
+RUN yum install -y ca-certificates git vim which kubectl boost zlib openssl libcurl openssl gcc python-devel net-tools
 
 RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | sh
 
