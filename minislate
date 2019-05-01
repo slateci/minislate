@@ -232,7 +232,7 @@ elif args.c1 == 'proxy':
       port = str(randint(30100,30201))
       exitcode = run('docker-compose exec kube lsof -i :'+ port)
     run('docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:'+port+' TCP:'+args.address+'; done"')
-    print(args.address+' is now accessible via port '+port+' on your host')
+    print(args.address+' is now accessible at localhost:'+port+' on your host')
 else:
   args.c1 = args.c1 or ''
   raise ValueError('Invalid argument: ' + args.c1)
