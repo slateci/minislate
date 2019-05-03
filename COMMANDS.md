@@ -111,7 +111,7 @@ $ ./minislate reload-catalog
 _No Arguments_.
 
 ### Proxy
-Access load balanced services from the ost
+Access load balanced services from the host
 ```
 $ ./minislate proxy 127.18.0.150:80
 ```
