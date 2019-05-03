@@ -109,3 +109,16 @@ Reload the catalog from the SLATE stable/incubator repositories
 $ ./minislate reload-catalog
 ```
 _No Arguments_.
+
+### Proxy
+Access load balanced services from the ost
+```
+$ ./minislate proxy 127.18.0.150:80
+```
+_Mutually Exclusive Arguments_:
+
+__{address}__ - As shown in example, without flags the command takes an address to forward to
+
+__--list__ - Show a list of proxies currently running
+
+__--rm__ - Removed an existing socat process by passing this flag with the PID of the process
