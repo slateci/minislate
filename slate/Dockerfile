@@ -5,6 +5,7 @@ ENV KUBECONFIG=/etc/kubernetes/admin.conf
 WORKDIR /src
 
 COPY kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+COPY aws-sdk.repo /etc/yum.repos.d/aws-sdk.repo
 COPY slate-server.repo /etc/yum.repos.d/slate-server.repo
 RUN yum install -y epel-release
 RUN yum install -y ca-certificates git vim which kubectl boost zlib openssl libcurl openssl gcc python-devel net-tools
@@ -15,9 +16,6 @@ RUN mkdir /root/.kube
 
 RUN curl -s -O https://jenkins.slateci.io/artifacts/client/slate-linux.tar.gz
 RUN tar xzf slate-linux.tar.gz && chmod +x slate && mv slate /usr/bin/
-
-RUN curl -s -O http://jenkins.slateci.io/artifacts/static/aws-sdk-cpp-dynamodb-libs-1.7.25-1.el7.centos.x86_64.rpm
-RUN yum install -y aws-sdk-cpp-dynamodb-libs-1.7.25-1.el7.centos.x86_64.rpm
 
 RUN yum install -y slate-api-server
 
