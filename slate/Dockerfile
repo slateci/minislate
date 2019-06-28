@@ -14,8 +14,8 @@ RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get
 
 RUN mkdir /root/.kube
 
-RUN curl -s -O https://jenkins.slateci.io/artifacts/client/slate-linux.tar.gz
-RUN tar xzf slate-linux.tar.gz && chmod +x slate && mv slate /usr/bin/
+RUN curl -s -O https://jenkins.slateci.io/artifacts/client/20190627220541-slate-linux-517.tar.gz
+RUN tar xzf 20190627220541-slate-linux-517.tar.gz && chmod +x slate && mv slate /usr/bin/
 
 RUN yum install -y slate-api-server
 
