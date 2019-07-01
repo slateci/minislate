@@ -9,6 +9,6 @@ pip install -r /opt/slate-portal/requirements.txt
 sed -i 's/localhost/0\.0\.0\.0/g' /opt/slate-portal/run_*
 cd /opt/slate-portal && ./run_portal.py &
 slate group create ms-group --field 'Resource Provider'
-slate cluster create ms-c --group ms-group --org SLATE -y
+slate cluster create ms-c --group ms-group --org SLATE --no-ingress -y
 printf "\n${bold}=============================================================\n${normal}"
 printf "\n${bold}Default Group:${normal} ms-group\n${bold}Default Cluster:${normal} ms-c\n"
