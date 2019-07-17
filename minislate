@@ -48,6 +48,7 @@ proxygroup = proxy.add_mutually_exclusive_group()
 proxygroup.add_argument('--list', dest='list', action='store_true', help='Example: `./minislate proxy list`')
 proxygroup.add_argument('--rm', metavar='pid', dest='pid', nargs='?', help='remove a proxy already in place by its PID')
 proxygroup.add_argument('address', metavar='address', nargs='?', help='socket address in kube container, likely a load balancer')
+gui = subparsers.add_parser('webgui', help='open the slate web interface for minislate')
 args = parser.parse_args()
 
 try:
@@ -233,6 +234,20 @@ elif args.c1 == 'proxy':
       exitcode = run('docker-compose exec kube lsof -i :'+ port)
     run('docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:'+port+' TCP:'+args.address+'; done"')
     print(args.address+' is now accessible at localhost:'+port+' on your host')
+elif args.c1 == 'webgui':
+    dashboardurl="http://localhost:5000/dashboard"
+    success=False
+    for launcher in ["xdg-open","open"]:
+        try:
+            result=subprocess.call([launcher,dashboardurl])
+            if result==0:
+                success=True
+                break
+        except OSError:
+            pass # let loop continue
+    if not success:
+        print("Unable to open the dashboard automatically.")
+        print("You can open "+dashboardurl+" in your web browser manually.")
 else:
   args.c1 = args.c1 or ''
   raise ValueError('Invalid argument: ' + args.c1)
