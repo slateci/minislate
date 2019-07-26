@@ -122,3 +122,10 @@ __{address}__ - As shown in example, without flags the command takes an address 
 __--list__ - Show a list of proxies currently running
 
 __--rm__ - Removed an existing socat process by passing this flag with the PID of the process
+
+### Portal
+Open the local copy of the SLATE web interface in a browser
+
+    ./minislate portal
+
+_No Arguments_.
