@@ -27,7 +27,7 @@ slate app install osg-frontier-squid --cluster my-cluster --group my-group --con
 
 rm -rf squidconfig
 
-export CLUSTER_IP=$(kubectl get --namespace slate-group-$CLUSTERGROUP -o jsonpath="{.spec.clusterIP}" service osg-frontier-squid-cvmfs)
+export CLUSTER_IP=$(kubectl get --namespace slate-group-my-group -o jsonpath="{.spec.clusterIP}" service osg-frontier-squid-cvmfs)
 
 echo "Adding CVMFS..."
 
