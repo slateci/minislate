@@ -21,3 +21,4 @@ systemctl restart kubelet
 # Tiller (Helm)
 kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+chmod 666 /dev/fuse
