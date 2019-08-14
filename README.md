@@ -38,6 +38,10 @@ Running `./minislate destroy --rmi` will remove the built container images from 
 
 For a more detailed description of each MiniSLATE command view [COMMANDS.md](https://github.com/slateci/minislate/blob/master/COMMANDS.md)
 
+## Updating the application catalog
+
+Run `./minislate helm repo update` to force an update of the application catalog. 
+
 ## Internal Details
 MiniSLATE is a docker-compose orchestrated standard SLATE deployment (with a couple performance tweaks for personal machines).
 
