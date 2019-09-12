@@ -6,6 +6,7 @@ echo "FallbackDNS=8.8.4.4" >> /etc/systemd/resolved.conf
 systemctl restart systemd-resolved
 systemctl restart kubelet
 # Import cached hyperkube image
+docker pull k8s.gcr.io/hyperkube:v1.14.0 && docker save -o hyperkube.tar k8s.gcr.io/hyperkube:v1.14.0
 docker load -i /hyperkube.tar
 rm -f /hyperkube.tar
 # Install Kubernetes
