@@ -90,9 +90,6 @@ if args.c1 == 'init':
     if os.path.isfile('docker-compose.yml'):
         raise EnvironmentError(
             'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
-    print("Caching Hyperkube image")
-    run('/bin/sh -c "docker pull k8s.gcr.io/hyperkube:' + KUBEVER + ' && \
-      docker save -o kube/hyperkube.tar k8s.gcr.io/hyperkube:' + KUBEVER + '"')
     ports = []
     volumes = []
     if args.ports:
