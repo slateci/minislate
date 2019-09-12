@@ -29,8 +29,8 @@ RUN helm init --client-only
 RUN echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 
 RUN docker pull k8s.gcr.io/hyperkube:v1.14.0 && docker save -o hyperkube.tar k8s.gcr.io/hyperkube:v1.14.0
-COPY config.yaml .
-COPY init.sh .
+COPY kube/config.yaml .
+COPY kube/init.sh .
 RUN chmod +x init.sh
 EXPOSE 30000-30100
 CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
