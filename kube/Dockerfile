@@ -28,8 +28,6 @@ RUN helm init --client-only
 # Increase vm.max_map_count, originally for elasticsearch
 RUN echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 
-RUN systemctl enable --now docker
-
 RUN docker pull k8s.gcr.io/hyperkube:v1.14.0 && docker save -o hyperkube.tar k8s.gcr.io/hyperkube:v1.14.0
 COPY kube/config.yaml .
 COPY kube/init.sh .
