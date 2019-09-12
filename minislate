@@ -159,7 +159,7 @@ elif args.c1 == 'destroy':
 elif args.c1 == 'build':
   args.c2 = args.c2 or ''
   if args.c2 == 'kube' or args.c2 == '':
-  run('docker-compose -f docker-compose.yml.tmpl build --no-cache ' + args.c2)
+    run('docker-compose -f docker-compose.yml.tmpl build --no-cache ' + args.c2)
   try:
       os.remove('kube/hyperkube.tar')
   except OSError:
