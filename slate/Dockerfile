@@ -42,4 +42,4 @@ COPY slate/init.sh /
 EXPOSE 5000 51000 18080
 RUN chmod +x init.sh
 
-COPY supervisord.conf /etc/supervisord.conf
+COPY slate/supervisord.conf /etc/supervisord.conf
