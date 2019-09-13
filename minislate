@@ -156,11 +156,6 @@ elif args.c1 == 'build':
   args.c2 = args.c2 or ''
   print('WARNING Building locally can take more than 15 minutes')
   print('It is reccomended to use hosted images by running ./minislate init')
-  print('Building the kube container...')
-  run('docker build . --file=kube/Dockerfile --tag=slateci/ms-kube')
-  print('Building the slate container...')
-  run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
-  print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
   if (args.c2 == 'kube'):
     print('Building the kube container...')
     run('docker build . --file=kube/Dockerfile --tag=slateci/ms-kube')
