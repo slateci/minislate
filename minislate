@@ -154,8 +154,13 @@ elif args.c1 == 'destroy':
             pass
 elif args.c1 == 'build':
   args.c2 = args.c2 or ''
-  if args.c2 == 'kube' or args.c2 == '':
-    run('docker-compose -f docker-compose.yml.tmpl build --no-cache ' + args.c2)
+  print('WARNING Building locally can take more than 15 minutes')
+  print('It is reccomended to use hosted images by running ./minislate init')
+  print('Building the kube container...')
+  run('docker build . --file=kube/Dockerfile --tag=slateci/ms-kube')
+  print('Building the slate container...')
+  run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
+  print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
