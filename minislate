@@ -115,10 +115,6 @@ if args.c1 == 'init':
     except:
       raise EnvironmentError('Could not run docker-compose. Is it installed?')
     if(run('docker-compose up -d') == 0):
-      try:
-        os.remove('kube/hyperkube.tar')
-      except OSError:
-        pass
       if(run('docker-compose exec kube ./init.sh') == 0 and run('docker-compose exec slate ./init.sh') == 0):
         if volumes:
           print('\033[1m'+"Volume Mounts:"+'\033[0m'+'\n'+volumes)
@@ -160,10 +156,6 @@ elif args.c1 == 'build':
   args.c2 = args.c2 or ''
   if args.c2 == 'kube' or args.c2 == '':
     run('docker-compose -f docker-compose.yml.tmpl build --no-cache ' + args.c2)
-  try:
-      os.remove('kube/hyperkube.tar')
-  except OSError:
-      pass
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
