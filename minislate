@@ -161,6 +161,20 @@ elif args.c1 == 'build':
   print('Building the slate container...')
   run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
   print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
+  if (args.c2 == 'kube'):
+    print('Building the kube container...')
+    run('docker build . --file=kube/Dockerfile --tag=slateci/ms-kube')
+    print('miniSLATE kube container built successfully')
+  elif (args.c2 == 'slate'):
+    print('Building the slate container...')
+    run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
+    print('miniSLATE slate container built successfully')
+  else: 
+    print('Building the kube container...')
+    run('docker build . --file=kube/Dockerfile --tag=slateci/ms-kube')
+    print('Building the slate container...')
+    run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
+    print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
