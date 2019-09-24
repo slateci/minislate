@@ -4,8 +4,7 @@ services:
     image: dwmkerr/dynamodb
     restart: always
   kube:
-    build:
-      context: kube/
+    image: slateci/ms-kube
     restart: always
     tty: true
     privileged: true
@@ -29,8 +28,7 @@ services:
     depends_on:
       - db
       - kube
-    build:
-      context: slate/
+    image: slateci/ms-slate
     command: /usr/bin/supervisord -c /etc/supervisord.conf
     stdin_open: true
     tty: true
