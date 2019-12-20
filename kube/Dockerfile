@@ -28,6 +28,8 @@ RUN echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 
 COPY kube/config.yaml .
 COPY kube/init.sh .
+COPY kube/calico.yaml .
+
 RUN chmod +x init.sh
 EXPOSE 30000-30100
 CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
