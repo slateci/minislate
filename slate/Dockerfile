@@ -1,6 +1,6 @@
 FROM centos:7
 
-ENV KUBECONFIG=/etc/kubernetes/admin.conf
+ENV KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 WORKDIR /src
 
