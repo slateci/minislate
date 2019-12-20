@@ -2,7 +2,7 @@ FROM solita/ubuntu-systemd:18.04
 
 WORKDIR /
 
-ENV KUBECONFIG=/etc/kubernetes/admin.conf
+ENV KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 RUN apt-get update -qq && apt-get install -qqy \
     apt-transport-https \
