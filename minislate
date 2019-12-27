@@ -173,7 +173,7 @@ elif args.c1 == 'build':
 elif args.c1 == 'shell':
   initcheck()
   readycheck()
-  run('docker-compose exec ' + args.c2 + ' /bin/bash')
+  run('docker-compose exec ' + args.c2 + ' /bin/sh')
 elif args.c1 == 'status':
   initcheck()
   run('docker-compose ps')
