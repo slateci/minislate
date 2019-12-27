@@ -1,5 +1,5 @@
 #!/bin/bash
-sleep 5
+sleep 15
 set -e
 bold=$(tput bold)
 normal=$(tput sgr0)
