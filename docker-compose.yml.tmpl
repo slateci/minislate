@@ -4,7 +4,7 @@ services:
     image: dwmkerr/dynamodb
     restart: always
   kube:
-    image: rancher/k3s
+    image: slateci/ms-kube:k3s
     restart: always
     tty: true
     privileged: true
