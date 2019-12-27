@@ -1,14 +1,10 @@
 #!/bin/bash
 echo Waiting for SLATE server
-sleep 5
-echo ...
-sleep 5
-echo ...
-sleep 5
-echo ...
-sleep 5
-echo ...
-sleep 5
+for i in 1 2 3 4 5 6 7 8 
+do
+   sleep 4
+   echo "..."
+done
 set -e
 bold=$(tput bold)
 normal=$(tput sgr0)
