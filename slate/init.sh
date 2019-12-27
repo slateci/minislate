@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 sleep 5
 set -e
 bold=$(tput bold)
