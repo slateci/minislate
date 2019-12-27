@@ -115,7 +115,7 @@ if args.c1 == 'init':
     except:
       raise EnvironmentError('Could not run docker-compose. Is it installed?')
     if(run('docker-compose up -d') == 0):
-      if(run('docker-compose exec kube ./init.sh') == 0 and run('docker-compose exec slate ./init.sh') == 0):
+      if(run('docker-compose exec slate ./init.sh') == 0):
         if volumes:
           print('\033[1m'+"Volume Mounts:"+'\033[0m'+'\n'+volumes)
         print('\n'+'\033[1m'+"DONE! MiniSLATE is now initialized."+'\033[0m')
