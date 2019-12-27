@@ -10,7 +10,7 @@ COPY slate/slate-server.repo /etc/yum.repos.d/slate-server.repo
 RUN yum install -y epel-release
 RUN yum install -y ca-certificates git vim which kubectl boost zlib openssl libcurl openssl gcc python-devel libffi-devel net-tools supervisor
 
-RUN curl -s https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | sh
+RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
 RUN mkdir /root/.kube
 
