@@ -2,6 +2,7 @@
 set -e
 bold=$(tput bold)
 normal=$(tput sgr0)
+sleep 15
 kubectl config set clusters.default.server https://kube:6443
 slate group create my-group --field 'Resource Provider'
 slate cluster create my-cluster --group my-group --org SLATE --no-ingress -y
