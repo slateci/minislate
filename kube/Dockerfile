@@ -21,7 +21,6 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 RUN echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' > /etc/apt/sources.list.d/docker-ce.list
 RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get update && apt-get install -y docker-ce && apt-get clean
-RUN curl -sfL https://get.k3s.io | sh
 
 # Increase vm.max_map_count, originally for elasticsearch
 RUN echo "vm.max_map_count=262144" >> /etc/sysctl.conf
