@@ -1,5 +1,14 @@
 #!/bin/bash
-sleep 15
+echo Waiting for SLATE server
+sleep 5
+echo ...
+sleep 5
+echo ...
+sleep 5
+echo ...
+sleep 5
+echo ...
+sleep 5
 set -e
 bold=$(tput bold)
 normal=$(tput sgr0)
