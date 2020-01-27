@@ -15,7 +15,7 @@ After installing the dependency requirements and pulling the MiniSLATE repositor
 
 Make sure your Docker is running using `systemctl status docker`.
 
-To start docker rune `systemctl enable --now docker`.
+To start docker run `systemctl enable --now docker`.
 
 On MacOS make sure the Docker Desktop application is running.
 
