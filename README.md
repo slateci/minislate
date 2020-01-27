@@ -13,7 +13,11 @@ Users can be added to the Docker group with: `sudo usermod -a -G docker <usernam
 ## Getting Started
 After installing the dependency requirements and pulling the MiniSLATE repository:
 
-Make sure your Docker is running.
+Make sure your Docker is running using `systemctl status docker`.
+
+To start docker run `systemctl enable --now docker`.
+
+On MacOS make sure the Docker Desktop application is running.
 
 If desired, `source shell_aliases` will allow you to run the minislate command and the internal slate and kubectl commands from any directory.
 
