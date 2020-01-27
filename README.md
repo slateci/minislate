@@ -15,6 +15,10 @@ After installing the dependency requirements and pulling the MiniSLATE repositor
 
 Make sure your Docker is running using `systemctl status docker`.
 
+To start docker rune `systemctl enable --now docker`.
+
+On MacOS make sure the Docker Desktop application is running.
+
 If desired, `source shell_aliases` will allow you to run the minislate command and the internal slate and kubectl commands from any directory.
 
 Build the container images with	`./minislate build` 
