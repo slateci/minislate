@@ -8,7 +8,7 @@ import argparse
 import sys
 import os
 
-KUBEVER = 'v1.14.0'
+KUBEVER = 'v1.17.0'
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="commands", dest="c1")
