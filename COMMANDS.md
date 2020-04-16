@@ -1,5 +1,5 @@
 
-## MiniSLATE Commands
+# MiniSLATE Commands
 A listing of all MiniSLATE subcommands and their arguments.
 
 ### Build
