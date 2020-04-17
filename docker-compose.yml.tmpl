@@ -16,15 +16,6 @@ services:
     ports:
       - 30000-30200:30000-30200
 # {PORTS}
-  nfs:
-    image: itsthenetwork/nfs-server-alpine
-    restart: always
-    privileged: true
-    tty: true
-    environment:
-      - SHARED_DIRECTORY=/srv
-    volumes:
-      - nfsdata:/srv
   slate:
     depends_on:
       - db
