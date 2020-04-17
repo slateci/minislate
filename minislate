@@ -155,16 +155,13 @@ elif args.c1 == 'build':
   print('WARNING Building locally can take more than 15 minutes')
   print('It is reccomended to use hosted images by running ./minislate init')
   if (args.c2 == 'kube'):
-    print('Building the kube container...')
-    run('docker build . --file=kube/Dockerfile --tag=slateci/ms-kube')
-    print('miniSLATE kube container built successfully')
+    print('Minislate kube container is deprecated in this version. Minislate now relies on K3s.')
+    print('Doing nothing.')
   elif (args.c2 == 'slate'):
     print('Building the slate container...')
     run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
     print('miniSLATE slate container built successfully')
   else: 
-    print('Building the kube container...')
-    run('docker build . --file=kube/Dockerfile --tag=slateci/ms-kube')
     print('Building the slate container...')
     run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
     print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
