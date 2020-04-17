@@ -8,8 +8,6 @@ import argparse
 import sys
 import os
 
-KUBEVER = 'v1.14.0'
-
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="commands", dest="c1")
 init = subparsers.add_parser('init', help='initialize minislate containers')
