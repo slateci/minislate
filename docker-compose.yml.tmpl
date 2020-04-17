@@ -14,7 +14,7 @@ services:
       - kubernetes:/etc/rancher
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     ports:
-      - 30000-30200:30000-30200
+      - 30000-30999:30000-30999
 # {PORTS}
   slate:
     depends_on:
