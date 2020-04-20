@@ -4,36 +4,28 @@ services:
     image: dwmkerr/dynamodb
     restart: always
   kube:
-    image: slateci/ms-kube
+    image: rancher/k3s:latest
     restart: always
     tty: true
     privileged: true
+    command: server --https-listen-port 6443
     volumes:
       - /lib/modules:/lib/modules
-      - kubernetes:/etc/kubernetes
+      - kubernetes:/etc/rancher
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     ports:
-      - 30000-30200:30000-30200
+      - 30000-30999:30000-30999
 # {PORTS}
-  nfs:
-    image: itsthenetwork/nfs-server-alpine
-    restart: always
-    privileged: true
-    tty: true
-    environment:
-      - SHARED_DIRECTORY=/srv
-    volumes:
-      - nfsdata:/srv
   slate:
     depends_on:
       - db
       - kube
-    image: slateci/ms-slate
+    image: slateci/ms-slate:k3s
     command: /usr/bin/supervisord -c /etc/supervisord.conf
     stdin_open: true
     tty: true
     volumes:
-      - kubernetes:/etc/kubernetes
+      - kubernetes:/etc/rancher
 # {VOLUMES}
     ports:
       - 5000:5000

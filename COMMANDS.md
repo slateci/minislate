@@ -3,13 +3,10 @@
 A listing of all MiniSLATE subcommands and their arguments.
 
 ### Build
-Build/rebuild container images
+Build/rebuild container images. It is reccomended to use the hosted images.
 ```
-$ ./minislate build [container_name]
+$ ./minislate build
 ```
-_Optional Argument_:
-
-__container_name__ [slate or kube] - builds a single container image as opposed to all
 
 ### Init
 Initialize minislate containers

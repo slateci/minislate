@@ -39,11 +39,7 @@ To **completely destroy** the environment such that it can be created again run:
 
 Running `./minislate destroy --rmi` will remove the built container images from your machine. This can nescasary if there was a failure or error in the build proccess. It is also needed to completely remove miniSLATE from your machine.
 
-For a more detailed description of each MiniSLATE command view [COMMANDS.md](https://github.com/slateci/minislate/blob/master/COMMANDS.md)
-
-## Updating the application catalog
-
-Run `./minislate helm repo update` to force an update of the application catalog. 
+For a more detailed description of each MiniSLATE command view [COMMANDS.md](https://github.com/slateci/minislate/blob/master/COMMANDS.md) 
 
 ## Internal Details
 MiniSLATE is a docker-compose orchestrated standard SLATE deployment (with a couple performance tweaks for personal machines).
