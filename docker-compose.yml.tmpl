@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
       - kube
-    image: slateci/ms-slate:k3s
+    image: slateci/ms-slate:latest
     command: /usr/bin/supervisord -c /etc/supervisord.conf
     stdin_open: true
     tty: true
