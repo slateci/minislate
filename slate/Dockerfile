@@ -30,7 +30,7 @@ RUN pip install virtualenv
 RUN git clone https://github.com/slateci/slate-portal.git .
 RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
 RUN echo "SLATE_API_TOKEN = '5B121807-7D5D-407A-8E22-5F001EF594D4'" >> /opt/slate-portal/portal/portal.conf
-RUN echo "SLATE_API_ENDPOINT = 'https://localhost:443'" >> /opt/slate-portal/portal/portal.conf
+RUN echo "SLATE_API_ENDPOINT = 'http://localhost:18080'" >> /opt/slate-portal/portal/portal.conf
 RUN mkdir /opt/slate-portal/instance && cp /opt/slate-portal/portal/portal.conf /opt/slate-portal/instance/
 RUN sed -i -e 's/localhost/0\.0\.0\.0/g' -e 's/ssl_context=([^)]*)//' /opt/slate-portal/run_*
 RUN pip install -r /opt/slate-portal/requirements.txt
