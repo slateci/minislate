@@ -7,7 +7,7 @@ WORKDIR /src
 COPY slate/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 COPY slate/aws-sdk.repo /etc/yum.repos.d/aws-sdk.repo
 COPY slate/slate-server.repo /etc/yum.repos.d/slate-server.repo
-COPY slate/portal-extras.conf /opt/slate-portal/extras.conf
+
 RUN yum install -y epel-release
 RUN yum install -y ca-certificates git vim which kubectl boost zlib openssl libcurl openssl gcc python-devel libffi-devel net-tools supervisor
 
