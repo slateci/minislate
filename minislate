@@ -143,7 +143,7 @@ elif args.c1 == 'destroy':
     if choice in yes or args.confirm:
         run('docker-compose kill -s SIGKILL kube')
         if args.rmi:
-            run('docker-compose down -v --rmi local')
+            run('docker-compose down -v --rmi all')
         else:
             run('docker-compose down -v')
         try:
