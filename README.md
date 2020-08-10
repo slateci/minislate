@@ -58,3 +58,5 @@ Many errors that you will encounter with minislate are state related. They may b
 Be sure this proccess doesn't get interrupted, or you may have to destroy again. At this point if the initialization fails for any reason, you may be dealing with an issue related to the images themselves. To remove and rebuild container images run the following:
 
 `./minislate destroy --rmi && ./minislate init`
+
+
