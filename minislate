@@ -230,7 +230,7 @@ elif args.c1 == 'proxy':
     run('docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:'+port+' TCP:'+args.address+'; done"')
     print(args.address+' is now accessible at localhost:'+port+' on your host')
 elif args.c1 == 'portal':
-    dashboardurl="http://localhost:5000/dashboard"
+    dashboardurl="http://localhost:5000/slate_portal"
     success=False
     for launcher in ["xdg-open","open"]:
         try:
