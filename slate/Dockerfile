@@ -33,6 +33,7 @@ RUN mkdir /opt/slate-portal/instance && cp /opt/slate-portal/portal/portal.conf 
 RUN sed -i -e 's/localhost/0\.0\.0\.0/g' -e 's/ssl_context=([^)]*)//' /opt/slate-portal/run_*
 RUN pip install -r /opt/slate-portal/requirements.txt
 COPY slate/start_portal.sh /opt/slate-portal/start_portal.sh
+RUN chmod +x /opt/slate-portal/start_portal.sh
 
 WORKDIR /
 RUN dd if=/dev/urandom of=encryptionKey bs=1024 count=1
