@@ -32,6 +32,7 @@ RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cac
 RUN mkdir /opt/slate-portal/instance && cp /opt/slate-portal/portal/portal.conf /opt/slate-portal/instance/
 RUN sed -i -e 's/localhost/0\.0\.0\.0/g' -e 's/ssl_context=([^)]*)//' /opt/slate-portal/run_*
 RUN pip install -r /opt/slate-portal/requirements.txt
+COPY slate/start_portal.sh /opt/slate-portal/start_portal.sh
 
 WORKDIR /
 RUN dd if=/dev/urandom of=encryptionKey bs=1024 count=1
