@@ -2,7 +2,6 @@ version: '3.1'
 services:
   db:
     image: amazon/dynamodb-local
-    container_name: dynamodb-local
     ports:
       - "8000:8000"
   kube:
