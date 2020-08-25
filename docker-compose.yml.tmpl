@@ -1,8 +1,10 @@
 version: '3.1'
 services:
   db:
-    image: dwmkerr/dynamodb
-    restart: always
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
   kube:
     image: rancher/k3s:latest
     restart: always
@@ -21,6 +23,9 @@ services:
       - db
       - kube
     image: slateci/ms-slate:latest
+    environment:
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
     command: /usr/bin/supervisord -c /etc/supervisord.conf
     stdin_open: true
     tty: true
