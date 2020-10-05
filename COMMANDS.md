@@ -23,6 +23,8 @@ __publish__ [-p, --publish, --port] - Publish a port in the Kubernetes container
 
 If a single port is specified (e.g. `-p 3000`) that port will be mapped to the same port on the host.
 
+__selenium__ [-s, --selenium] - For use with automated testing infastructure. Disables the `tty` option in the docker-compose bring up of Minislate.
+
 ### Status
 View status of minislate containers
 ```
