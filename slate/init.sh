@@ -1,4 +1,5 @@
 #!/bin/bash
+TERM=dumb
 echo Waiting for SLATE server
 for i in 1 2 3 4 5 6 7 8 
 do
