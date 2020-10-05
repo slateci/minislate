@@ -107,6 +107,7 @@ if args.c1 == 'init':
     contents = contents.replace('# {VOLUMES}', volumes)
     if args.selenium:
       contents = contents.replace('tty: true', 'tty: false')
+      contents = contents.replace('stdin_open: true', 'stdin_open: false')
     with open('docker-compose.yml', 'w') as file:
         file.write(contents)
         file.flush()
