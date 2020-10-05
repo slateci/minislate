@@ -3,7 +3,7 @@ services:
   test:
     build:
       context: test/
-    tty: true
+    tty: false
     privileged: true
     volumes:
       - .:/minislate
