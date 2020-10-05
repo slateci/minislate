@@ -59,4 +59,10 @@ Be sure this proccess doesn't get interrupted, or you may have to destroy again.
 
 `./minislate destroy --rmi && ./minislate init`
 
+## Test Infrastructure
+It may be nescasary to spin up Minislate in an automated way. For example, the Selenium portal tests automatically creates a Minislate cluster to test against. These clusters may require that `tty` is disabled inside the container. Minislate init can be run with the --selenium or -s flag to disable `tty` for automated testing.
+
+Example:
+
+`./minislate init -s`
 
