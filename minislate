@@ -15,6 +15,7 @@ init.add_argument('-p', '--port', '--publish', dest='ports', action='append', na
                   metavar='hostPort or hostPort:containerPort', help='Example: `./minislate init -p 3000`')
 init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
                   metavar='hostDir or hostDir:containerDir', help='Example: `./minislate init -v ~/workdir`')
+init.add_argument('-s', '--selenium', dest='selenium', action='store_true', help='Runs minislate without TTY, for use with Selenium test infrastructure')
 subparsers.add_parser('pause', help='pause minislate containers')
 subparsers.add_parser('unpause', help='unpause minislate containers')
 destroy = subparsers.add_parser('destroy', help='completely destroy environment')
@@ -104,6 +105,8 @@ if args.c1 == 'init':
         contents = file.read()
     contents = contents.replace('# {PORTS}', ports)
     contents = contents.replace('# {VOLUMES}', volumes)
+    if args.selenium:
+      contents = contents.replace('tty: true', 'tty: false')
     with open('docker-compose.yml', 'w') as file:
         file.write(contents)
         file.flush()
