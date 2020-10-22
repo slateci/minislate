@@ -27,7 +27,7 @@ You can custom build your images using `./minislate build`, but this is not nece
 
 __TIP:__ Access local directories by mapping them into the SLATE container: `./minislate init -v ~/WorkDir:/mnt`
 
-[Utilize SLATE](http://slateci.io/docs/quickstart/slate-client.html#basic-use) with `./minislate slate ...(cluster list, group list, etc)...`
+[Utilize SLATE](https://slateci.io/docs/tools/index.html) with `./minislate slate ...(cluster list, group list, etc)...`
 
 Or shell into the container and run it "natively":
 ```
