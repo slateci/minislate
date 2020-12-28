@@ -9,7 +9,7 @@ COPY slate/aws-sdk.repo /etc/yum.repos.d/aws-sdk.repo
 COPY slate/slate-server.repo /etc/yum.repos.d/slate-server.repo
 
 RUN yum install -y epel-release
-RUN yum install -y ca-certificates git vim which kubectl boost zlib openssl libcurl openssl gcc python-devel libffi-devel net-tools supervisor
+RUN yum install -y ca-certificates git vim which kubectl-1.19.1 boost zlib openssl libcurl openssl gcc python-devel libffi-devel net-tools supervisor
 
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 RUN helm repo add stable https://charts.helm.sh/stable
