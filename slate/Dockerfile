@@ -25,7 +25,7 @@ RUN yum clean all && rm -rf /var/cache/yum
 
 WORKDIR /opt/slate-portal
 RUN rm -rf /src
-RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python
+RUN curl https://bootstrap.pypa.io/2.7/get-pip.py | python
 RUN pip install virtualenv
 RUN git clone https://github.com/slateci/slate-portal.git .
 
