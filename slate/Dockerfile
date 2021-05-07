@@ -29,9 +29,7 @@ RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py | python
 RUN pip install virtualenv
 RUN git clone https://github.com/slateci/slate-portal.git .
 
-WORKDIR /opt/slate-portal/slate-portal
 RUN git checkout instance-restart
-WORKDIR /opt/slate-portal
 
 RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
 RUN mkdir /opt/slate-portal/instance && cp /opt/slate-portal/portal/portal.conf /opt/slate-portal/instance/
