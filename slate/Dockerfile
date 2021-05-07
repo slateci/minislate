@@ -31,6 +31,8 @@ RUN git clone https://github.com/slateci/slate-portal.git .
 
 RUN git checkout instance-restart
 
+# PIP deprecation hack
+RUN pip install cffi
 RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
 RUN mkdir /opt/slate-portal/instance && cp /opt/slate-portal/portal/portal.conf /opt/slate-portal/instance/
 RUN sed -i -e 's/localhost/0\.0\.0\.0/g' -e 's/ssl_context=([^)]*)//' /opt/slate-portal/run_*
