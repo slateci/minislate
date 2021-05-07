@@ -29,8 +29,6 @@ RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py | python
 RUN pip install virtualenv
 RUN git clone https://github.com/slateci/slate-portal.git .
 
-RUN git checkout instance-restart
-
 # PIP deprecation hack
 RUN pip install cffi
 RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
