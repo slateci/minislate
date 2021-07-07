@@ -1,252 +1,520 @@
 #!/usr/bin/env python
-
-from __future__ import print_function
+import pathlib
+import shutil
+import time
+from typing import Optional, Dict, List, Any
 from random import randint
-from shlex import split
+from subprocess import DEVNULL
+from enum import Enum
+
 import subprocess
 import argparse
 import sys
 import os
 
-parser = argparse.ArgumentParser()
-subparsers = parser.add_subparsers(title="commands", dest="c1")
-init = subparsers.add_parser('init', help='initialize minislate containers')
-init.add_argument('-p', '--port', '--publish', dest='ports', action='append', nargs='?',
-                  metavar='hostPort or hostPort:containerPort', help='Example: `./minislate init -p 3000`')
-init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
-                  metavar='hostDir or hostDir:containerDir', help='Example: `./minislate init -v ~/workdir`')
-init.add_argument('-s', '--selenium', dest='selenium', action='store_true', help='Runs minislate without TTY, for use with Selenium test infrastructure')
-subparsers.add_parser('pause', help='pause minislate containers')
-subparsers.add_parser('unpause', help='unpause minislate containers')
-destroy = subparsers.add_parser('destroy', help='completely destroy environment')
-destroy.add_argument('--rmi', dest='rmi', action='store_true', help='Example: `./minislate destroy --rmi`')
-destroy.add_argument('-y', dest='confirm', action='store_true', help='Example: `./minislate destroy -y`')
-subparsers.add_parser('status', help='view status of minislate containers')
-test = subparsers.add_parser('test', help='run test of the minislate environment')
-test.add_argument('--debug', dest='debug', action='store_true', help='Example: `./minislate test --debug`')
-test.add_argument('--kill', dest='kill', action='store_true', help='Example: `./minislate test --kill`')
-build = subparsers.add_parser('build', help='build/rebuild container images')
-build.add_argument('c2', metavar='container', nargs='?', choices=[
-                   'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate build slate`')
-shell = subparsers.add_parser(
-    'shell', help='open a shell in a minislate container')
-shell.add_argument('c2', metavar='container', choices=[
-                   'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate shell slate`')
-slate = subparsers.add_parser('slate', help='run a slate command')
-slate.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
-                   help='Example: `./minislate slate group list`')
-kubectl = subparsers.add_parser('kubectl', help='run a kubectl command')
-kubectl.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
-                     help='Example: `./minislate kubectl get po --all-namespaces`')
-exec_ = subparsers.add_parser('exec', help='wrapper of "docker-compose exec"')
-exec_.add_argument('c2', metavar='command', nargs=argparse.REMAINDER,
-                   help='Example: `./minislate exec kube ip addr`')
-subparsers.add_parser('reload-catalog', help='reload production slate catalog')
-proxy = subparsers.add_parser('proxy', help='proxy an internal socket address to the host')
-proxygroup = proxy.add_mutually_exclusive_group()
-proxygroup.add_argument('--list', dest='list', action='store_true', help='Example: `./minislate proxy list`')
-proxygroup.add_argument('--rm', metavar='pid', dest='pid', nargs='?', help='remove a proxy already in place by its PID')
-proxygroup.add_argument('address', metavar='address', nargs='?', help='socket address in kube container, likely a load balancer')
-gui = subparsers.add_parser('portal', help='open the slate web interface for minislate')
-args = parser.parse_args()
 
-try:
-  from subprocess import DEVNULL  # py3k
-except ImportError:
-    DEVNULL = open(os.devnull, 'wb')
+class ProviderType(Enum):
+  """
+  Enum class to define virtualization provider types
+  """
+  DOCKER = 0
+  PODMAN = 1
+
+
+class VirtProvider:
+  """
+  Class to handle virtualization provider usage
+  """
+
+  def __init__(self):
+    """
+    Initialize object
+    """
+    self.provider_type, self.provider_compose_path, self.provider_path = self.get_provider()
+
+  @staticmethod
+  def get_provider() -> (ProviderType, pathlib.Path, pathlib.Path):
+    """
+    Get virtualization provider and binary location
+    :return: tuple with provider type and path to provider binary
+    """
+    if shutil.which('docker-compose'):
+      return ProviderType.DOCKER, pathlib.Path(shutil.which('docker-compose')), pathlib.Path(shutil.which('docker'))
+    elif shutil.which('podman-compose'):
+      return ProviderType.PODMAN, pathlib.Path(shutil.which('podman-compose')), pathlib.Path(shutil.which('podman'))
+    else:
+      raise Exception("Can't get virtualization provider type")
+
+  def compose(self, args) -> Optional[str]:
+    """
+    Run a given compose command
+    :param args: arguments to compose command
+    :return: Output of compose command or None if any error occurred
+    """
+    try:
+      # run returns bytes or str and that confuses type checking
+      print([str(self.provider_compose_path)] + args)
+      return subprocess.run([str(self.provider_compose_path)] + args,  # type: ignore
+                            stdout=subprocess.PIPE,
+                            check=True,
+                            text=True).stdout
+    except subprocess.CalledProcessError:
+      sys.stderr.write(f"Can't run {self.provider_compose_path} with given args")
+      return None
+
+  def run(self, args) -> Optional[str]:
+    """
+    Run podman or docker build with given arguments
+    :param args: args to pass to podman or docker
+    :return: Output of compose command or None if any error occurred
+    """
+    try:
+      print([self.provider_path] + args)
+      return subprocess.run([self.provider_path] + args,  # type: ignore
+                            stdout=subprocess.PIPE,
+                            check=True,
+                            text=True).stdout
+    except subprocess.CalledProcessError:
+      sys.stderr.write(f"Can't run {self.provider_path} with given args")
+      return None
+
+  def interactive(self, container: str) -> None:
+    """
+    Run inside specified container interactively
+    :param container: container name (e.g. slate)
+    :return: None
+    """
+    if self.provider_type == ProviderType.DOCKER:
+      subprocess.call([self.provider_compose_path, 'exec', container, '/bin/sh'])
+    elif self.provider_type == ProviderType.PODMAN:
+      container_info = self.get_status()
+      container_id = [x['CONTAINER_ID'] for x in container_info if container in x['IMAGE']]
+      if len(container_id) == 0:
+        sys.stderr.write("Can't find specified container")
+        sys.exit(1)
+      subprocess.call([self.provider_path, 'exec', '-it', container_id[0], '/bin/sh'])
+
+  def exec(self, container: str, args: List[Any]) -> int:
+    """
+    Run a command inside specified container
+
+    :param container: container name (e.g. slate)
+    :param args: arguments to pass to command in container
+    :return: None
+    """
+    if self.provider_type == ProviderType.DOCKER:
+      subprocess.call([self.provider_compose_path, 'exec', container] + args)
+    elif self.provider_type == ProviderType.PODMAN:
+      container_info = self.get_status()
+      container_id = [x['CONTAINER_ID'] for x in container_info if container in x['IMAGE']]
+      if len(container_id) == 0:
+        sys.stderr.write("Can't find specified container")
+        sys.exit(1)
+      return subprocess.call([self.provider_path, 'exec', container_id[0]] + args)
+
+  @staticmethod
+  def split_fields(line: str, header_line: str) -> Optional[Dict[str, str]]:
+    """
+    Split output from ps command output into list
+
+    :param line: line of output from docker or podman ps
+    :param header_line: line with column names from ps output
+    :return: list with line split into components
+    """
+    field_indices = []
+    if line == header_line:
+      return None
+    # get the indices associated with each field
+    field_names = ['CONTAINER ID', 'IMAGE', 'COMMAND', 'CREATED', 'STATUS', 'PORTS', 'NAMES']
+    for col in field_names:
+      cur_idx = header_line.find(col)
+      if cur_idx == -1:
+        return None
+      field_indices.append(cur_idx)
+    field_indices.append(-1)
+    if len(line) < field_indices[-2]:
+      # invalid line since it's length is less than we expect
+      return None
+    fields = {}
+    field_names[0] = 'CONTAINER_ID'
+    # use the field indices to process the input line
+    for index in range(len(field_names)):
+      field = line[field_indices[index]:field_indices[index+1]].strip()
+      fields[field_names[index]] = field
+    return fields
+
+  def get_status(self) -> List[Dict[str, str]]:
+    """
+    Return list with information on containers that minislate has created
+    :return: List with Dictionary containing container info
+    """
+    output = self.compose(['ps']).split("\n")
+    header_line = [x for x in output if x.startswith('CONTAINER')][0]
+    container_info = [self.split_fields(x, header_line) for x in output]
+    return [x for x in container_info if x]  # filter out entries with None
+
 
 def exception_handler(exception_type, exception, traceback):
     print(exception)
 
-sys.excepthook = exception_handler
 
-def initcheck(initerr='MiniSLATE is not initialized. Run: `./minislate init`'):
+def init_check(initerr='MiniSLATE is not initialized. Run: `./minislate init`'):
     if not os.path.isfile('docker-compose.yml'):
         raise EnvironmentError(initerr)
 
 
-def readycheck(rdyerr='MiniSLATE has non-ready containers. Is the environment paused?'):
-  try:
-    subprocess.check_call(split(
-        '/bin/sh -c "docker-compose ps | grep Up"'), stdout=DEVNULL, close_fds=True)
-  except subprocess.CalledProcessError:
-    raise EnvironmentError(rdyerr)
+def ready_check(provider: VirtProvider, ready_error: str = None) -> None:
+  """
+  Check to make sure all slate containers are up and ready
+
+  :param ready_error: error message to print
+  :param provider: Provider object with information on system to use
+  :return:
+  """
+  if not ready_error:
+    ready_error = 'MiniSLATE has non-ready containers. Is the environment paused?'
+
+  output = provider.get_status()
+  non_ready = [x for x in output if not x['STATUS'].lower().startswith('up')]
+  if len(non_ready) != 0:
+    raise EnvironmentError(ready_error)
 
 
-def run(cmd):
-  return subprocess.call(split(cmd))
+def kill_test(provider: VirtProvider) -> None:
+  """
+  Kill test containers
 
+  :param provider: Provider object with information on system to use
+  :return: None
+  """
+  if provider.provider_type == ProviderType.DOCKER:
+    provider.compose(['-f', 'docker-compose-test.yml', 'kill', '-s', 'SIGKILL', 'test'])
+    provider.compose(['-f', 'docker-compose-test.yml', 'down', '-v'])
+  elif provider.provider_type == ProviderType.PODMAN:
+    provider.compose(['-f', 'docker-compose-test.yml', 'stop', 'test'])
+    provider.compose(['-f', 'docker-compose-test.yml', 'down'])
 
-def testkill():
-  run('docker-compose -f docker-compose-test.yml kill -s SIGKILL test')
-  run('docker-compose -f docker-compose-test.yml down -v')
   try:
     os.remove('docker-compose.yml')
   except OSError:
     pass
 
-if args.c1 == 'init':
-    if os.path.isfile('docker-compose.yml'):
-        raise EnvironmentError(
-            'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
-    ports = []
-    volumes = []
-    if args.ports:
-        for item in args.ports:
-            ports.append('      - ' + item)
-    if args.volumes:
-        for item in args.volumes:
-            if ':' not in item:
-              item = item + ':/mnt/' + os.path.basename(item)
-            volumes.append('      - ' + item)
-    ports = '\n'.join(ports)
-    volumes = '\n'.join(volumes)
-    with open('docker-compose.yml.tmpl', 'r') as file:
-        contents = file.read()
-    contents = contents.replace('# {PORTS}', ports)
-    contents = contents.replace('# {VOLUMES}', volumes)
-    if args.selenium:
-      contents = contents.replace('tty: true', 'tty: false')
-      contents = contents.replace('stdin_open: true', 'stdin_open: false')
-    with open('docker-compose.yml', 'w') as file:
-        file.write(contents)
-        file.flush()
-        os.fsync(file)
-    try:
-      run('docker-compose -v')
-    except:
-      raise EnvironmentError('Could not run docker-compose. Is it installed?')
-    if(run('docker-compose up -d') == 0):
-      if(run('docker-compose exec -T slate ./init.sh') == 0):
-        if volumes:
-          print('\033[1m'+"Volume Mounts:"+'\033[0m'+'\n'+volumes)
-        print('\n'+'\033[1m'+"DONE! MiniSLATE is now initialized."+'\033[0m')
-elif args.c1 == 'pause':
-  initcheck()
-  readycheck(rdyerr='It appears MiniSLATE is already paused.')
-  run('docker-compose pause')
-elif args.c1 == 'unpause':
-  initcheck()
-  try:
-    subprocess.check_call(split(
-        '/bin/sh -c "docker-compose ps | grep Paused"'), stdout=DEVNULL, close_fds=True)
-  except subprocess.CalledProcessError:
+
+def init_slate(args: argparse.Namespace, provider: VirtProvider) -> None:
+  """
+  Initialize minislate cluster
+
+  :param args: parsed arguments
+  :param provider: Provider object with information on system to use
+  :return: None
+  """
+  if os.path.isfile('docker-compose.yml'):
+    raise EnvironmentError(
+      'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
+  ports = []
+  volumes = []
+  if args.ports:
+    for item in args.ports:
+      ports.append('      - ' + item)
+  if args.volumes:
+    for item in args.volumes:
+      if ':' not in item:
+        item = item + ':/mnt/' + os.path.basename(item)
+      volumes.append('      - ' + item)
+  ports = '\n'.join(ports)
+  volumes = '\n'.join(volumes)
+  with open('docker-compose.yml.tmpl', 'r') as file:
+    contents = file.read()
+  contents = contents.replace('# {PORTS}', ports)
+  contents = contents.replace('# {VOLUMES}', volumes)
+  if args.selenium:
+    contents = contents.replace('tty: true', 'tty: false')
+    contents = contents.replace('stdin_open: true', 'stdin_open: false')
+  with open('docker-compose.yml', 'w') as file:
+    file.write(contents)
+    file.flush()
+    os.fsync(file)
+  if provider.compose(['up', '-d']) is None:
+    if provider.compose(['exec', '-T', 'slate', './init.sh']) is None:
+      if volumes:
+        print('\033[1m' + "Volume Mounts:" + '\033[0m' + '\n' + volumes)
+      print('\n' + '\033[1m' + "DONE! MiniSLATE is now initialized." + '\033[0m')
+
+
+def pause_minislate(provider: VirtProvider) -> None:
+  """
+  Pause the minislate instance
+
+  :param provider: Provider object with information on system to use
+  :return: None
+  """
+  if provider.provider_type == ProviderType.PODMAN:
+    provider.run(['pods', 'pause', 'minislate'])
+  elif provider.provider_type == ProviderType.DOCKER:
+    container_info = provider.get_status()
+    container_ids = [x['CONTAINER_ID'] for x in container_info]
+    for container_id in container_ids:
+      provider.run(['pause', container_id])
+
+
+def unpause_minislate(provider: VirtProvider) -> None:
+  """
+  Unpause the minislate instance
+
+  :param provider: Provider object with information on system to use
+  :return: None
+  """
+  container_info = provider.get_status()
+  paused = [x['CONTAINER_ID'] for x in container_info if x['STATUS'].lower() == 'paused']  # type: ignore
+  if len(paused) == 0:
     raise EnvironmentError('MiniSLATE is not paused.')
-  run('docker-compose unpause')
-elif args.c1 == 'destroy':
-    initcheck()
+  if provider.provider_type == ProviderType.PODMAN:
+    provider.run(['pods', 'unpause', 'minislate'])
+  elif provider.provider_type == ProviderType.DOCKER:
+    for container_id in paused:
+      provider.run(['unpause', container_id])
+
+
+def destroy_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
+  """
+  Destroy the minislate instance
+
+  :param args: parsed args
+  :param provider: Provider object with information on system to use
+  :return: None
+  """
+  yes = {'yes', 'y', 'ye'}
+  choice = ''
+  if not args.confirm:
+    print("Are you sure you'd like to completely destroy your MiniSLATE environment? (y/N) ", end='')
+    choice = input().lower()
+  if choice in yes or args.confirm:
+    if provider.provider_type == ProviderType.PODMAN:
+      provider.run(['pod', 'down', 'minislate'])
+      sys.stdout.write("Waiting for minislate pod to stop")
+      time.sleep(10)
+      provider.run(['pod', 'kill', 'minislate'])
+    elif provider.provider_type == ProviderType.DOCKER:
+      provider.compose(['stop', 'kube'])
+      if args.rmi:
+        provider.compose(['down', '-v', '--rmi', 'all'])
+      else:
+        provider.compose(['down', '-v'])
     try:
-        input = raw_input
-    except NameError:
-        pass
-    yes = {'yes','y','ye'}
-    choice = ''
-    if not args.confirm:
-        print("Are you sure you'd like to completely destroy your MiniSLATE environment? (y/N) ", end='')
-        choice = input().lower()
-    if choice in yes or args.confirm:
-        run('docker-compose kill -s SIGKILL kube')
-        if args.rmi:
-            run('docker-compose down -v --rmi all')
-        else:
-            run('docker-compose down -v')
-        try:
-            os.remove('docker-compose.yml')
-        except OSError:
-            pass
-elif args.c1 == 'build':
-  args.c2 = args.c2 or ''
+      os.remove('docker-compose.yml')
+    except OSError:
+      pass
+
+
+def build_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
+  """
+  Build minislate images for use
+
+  :param args: parsed arguments
+  :param provider: Provider object with information on system to use
+  :return: None
+  """
+  args.subcommand = args.subcommand or ''
   print('WARNING Building locally can take more than 15 minutes')
-  print('It is reccomended to use hosted images by running ./minislate init')
-  if (args.c2 == 'kube'):
+  print('It is recommended to use hosted images by running ./minislate init')
+  if args.subcommand == 'kube':
     print('Minislate kube container is deprecated in this version. Minislate now relies on K3s.')
     print('Doing nothing.')
-  elif (args.c2 == 'slate'):
+  elif args.subcommand == 'slate':
     print('Building the slate container...')
-    run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
+    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
     print('miniSLATE slate container built successfully')
-  else: 
+  else:
     print('Building the slate container...')
-    run('docker build . --file=slate/Dockerfile --tag=slateci/ms-slate')
+    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
     print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
-elif args.c1 == 'shell':
-  initcheck()
-  readycheck()
-  run('docker-compose exec ' + args.c2 + ' /bin/sh')
-elif args.c1 == 'status':
-  initcheck()
-  run('docker-compose ps')
-elif args.c1 == 'test':
+
+
+def test_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
+  """
+  Test and validate minislate instanace
+  :param args: parsed arguments
+  :param provider: Provider object with information on system to use
+  :return: None
+  """
   if args.kill:
-    testkill()
+    kill_test(provider)
   else:
     if os.path.isfile('docker-compose.yml'):
       raise EnvironmentError("Can not run tests on existing environment. Please destroy your environment to run tests.")
-    run('docker-compose -f docker-compose-test.yml up -d --build')
-    run('docker-compose -f docker-compose-test.yml exec test /minislate/minislate init')
-    result = run('docker-compose -f docker-compose-test.yml exec test /minislate/test/test')
+    provider.compose(['-f', 'docker-compose-test.yml', 'up', '-d',  '--build'])
+    provider.compose(['-f', 'docker-compose-test.yml', 'exec', 'test', '/minislate/minislate', 'init'])
+    result = provider.compose(['-f', 'docker-compose-test.yml', 'exec', 'test', '/minislate/test/test'])
     if args.debug:
       print('Entering debug mode...')
       print('Exiting this shell will destroy the test environment')
-      run('docker-compose -f docker-compose-test.yml exec test /bin/sh')
-    testkill()
+      provider.compose(['-f', 'docker-compose-test.yml', 'exec', 'test', '/bin/sh'])
+    kill_test(provider)
     sys.exit(result)
-elif args.c1 == 'slate':
-  initcheck()
-  readycheck()
-  c2 = ' '.join(args.c2)
-  run('docker-compose exec slate slate ' + c2)
-elif args.c1 == 'kubectl':
-  initcheck()
-  readycheck()
-  c2 = ' '.join(args.c2)
-  run('docker-compose exec slate kubectl ' + c2)
-elif args.c1 == 'exec':
-  initcheck()
-  readycheck()
-  c2 = ' '.join(args.c2)
-  run('docker-compose exec ' + c2)
-elif args.c1 == 'reload-catalog':
-  initcheck()
-  readycheck()
-  if(run('docker-compose exec slate sh -c "curl --fail -X POST $(cat ~/.slate/endpoint)/v1alpha3/update_apps?token=$(cat ~/.slate/token)"') == 0):
-    print("SLATE Catalog has been reloaded.")
+
+
+def create_arg_parsers() -> argparse.ArgumentParser:
+  """
+  Create and setup argument parsers
+  :return: argument parser that can be used to parse minislate commands
+  """
+
+  parser = argparse.ArgumentParser()
+  subparsers = parser.add_subparsers(title="commands", dest="command")
+
+  init = subparsers.add_parser('init', help='initialize minislate containers')
+  init.add_argument('-p', '--port', '--publish', dest='ports', action='append', nargs='?',
+                    metavar='hostPort or hostPort:containerPort', help='Example: `./minislate init -p 3000`')
+  init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
+                    metavar='hostDir or hostDir:containerDir', help='Example: `./minislate init -v ~/workdir`')
+  init.add_argument('-s', '--selenium', dest='selenium', action='store_true',
+                    help='Runs minislate without TTY, for use with Selenium test infrastructure')
+
+  subparsers.add_parser('pause', help='pause minislate containers')
+  subparsers.add_parser('unpause', help='unpause minislate containers')
+
+  destroy = subparsers.add_parser('destroy', help='completely destroy environment')
+  destroy.add_argument('--rmi', dest='rmi', action='store_true', help='Example: `./minislate destroy --rmi`')
+  destroy.add_argument('-y', dest='confirm', action='store_true', help='Example: `./minislate destroy -y`')
+
+  subparsers.add_parser('status', help='view status of minislate containers')
+
+  test = subparsers.add_parser('test', help='run test of the minislate environment')
+  test.add_argument('--debug', dest='debug', action='store_true', help='Example: `./minislate test --debug`')
+  test.add_argument('--kill', dest='kill', action='store_true', help='Example: `./minislate test --kill`')
+
+  build = subparsers.add_parser('build', help='build/rebuild container images')
+  build.add_argument('subcommand', metavar='container', nargs='?', choices=[
+                     'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate build slate`')
+
+  shell = subparsers.add_parser('shell', help='open a shell in a minislate container')
+  shell.add_argument('subcommand', metavar='container', choices=[
+                     'kube', 'slate', 'db', 'nfs'], help='Example: `./minislate shell slate`')
+
+  slate = subparsers.add_parser('slate', help='run a slate command')
+  slate.add_argument('subcommand', metavar='command', nargs=argparse.REMAINDER,
+                     help='Example: `./minislate slate group list`')
+
+  kubectl = subparsers.add_parser('kubectl', help='run a kubectl command')
+  kubectl.add_argument('subcommand', metavar='command', nargs=argparse.REMAINDER,
+                       help='Example: `./minislate kubectl get po --all-namespaces`')
+
+  exec_ = subparsers.add_parser('exec', help='wrapper of "docker-compose exec"')
+  exec_.add_argument('subcommand', metavar='command', nargs=argparse.REMAINDER,
+                     help='Example: `./minislate exec kube ip addr`')
+
+  subparsers.add_parser('reload-catalog', help='reload production slate catalog')
+
+  proxy = subparsers.add_parser('proxy', help='proxy an internal socket address to the host')
+  proxygroup = proxy.add_mutually_exclusive_group()
+  proxygroup.add_argument('--list', dest='list', action='store_true', help='Example: `./minislate proxy list`')
+  proxygroup.add_argument('--rm', metavar='pid', dest='pid', nargs='?',
+                          help='remove a proxy already in place by its PID')
+  proxygroup.add_argument('address', metavar='address', nargs='?',
+                          help='socket address in kube container, likely a load balancer')
+
+  #  gui = subparsers.add_parser('portal', help='open the slate web interface for minislate')
+  return parser
+
+
+def run_main():
+  parser = create_arg_parsers()
+  args = parser.parse_args()
+  provider = VirtProvider()
+
+  if args.command not in ["init", "build", "test"]:
+    # test for initialization if we're running a command
+    # some commands need to run before init, hence the check above
+    init_check()
+
+  if args.command == 'init':
+    init_slate(args, provider)
+  elif args.command == 'pause':
+    ready_check(provider, ready_error='It appears MiniSLATE is already paused.')
+    pause_minislate(provider)
+  elif args.command == 'unpause':
+    unpause_minislate(provider)
+  elif args.command == 'destroy':
+    destroy_minislate(args, provider)
+  elif args.command == 'build':
+    # don't want init
+    build_minislate(args, provider)
+  elif args.command == 'shell':
+    ready_check(provider)
+    provider.interactive(args.subcommand)
+  elif args.command == 'status':
+    output = provider.compose(['ps']).split("\n")
+    output = [x for x in output if len(x) > 70]
+    print("\n".join(output))
+  elif args.command == 'test':
+    # don't want init
+    test_minislate(args, provider)
+  elif args.command == 'slate':
+    ready_check(provider)
+    provider.exec('slate', ['slate'] + args.subcommand)
+  elif args.command == 'kubectl':
+    ready_check(provider)
+    provider.exec('k3s', ['kubectl'] + args.subcommand)
+  elif args.command == 'exec':
+    ready_check(provider)
+    provider.exec(args.subcommand[0], args.subcommand[1:])
+  elif args.command == 'reload-catalog':
+    ready_check(provider)
+    retcode = provider.exec('slate', ['sh',
+                                      '-c',
+                                      'curl --fail -X POST $(cat ~/.slate/endpoint)/v1alpha3/update_apps?token=$(cat ~/.slate/token)'])
+    if retcode == 0:
+      print("SLATE Catalog has been reloaded.")
+    else:
+      print("SLATE Catalog reload failed.")
+  elif args.command == 'proxy':
+    if args.pid:
+      provider.exec('k3s', ['kube', 'kill', args.pid])
+    elif args.list:
+      listing = "No proxies found"
+      try:
+        listing = subprocess.check_output(['docker-compose',
+                                           'exec',
+                                           'kube',
+                                           '/bin/sh',
+                                           '-c',
+                                           '"ps --headers a o pid,cmd | '
+                                           'grep -E \'socat|PID\' | '
+                                           'grep -E \'while|PID\' | '
+                                           'grep -v grep"'])
+      except subprocess.CalledProcessError:
+        pass
+      print(listing)
+    else:
+      ready_check(provider)
+      exitcode = 0
+      port = 0
+      while exitcode < 1:
+        port = str(randint(30100,30201))
+        exitcode = run('docker-compose exec kube lsof -i :'+ port)
+      run(f'docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:{port} TCP:{args.address}; done"')
+      print(f'{args.address} is now accessible at localhost:{port} on your host')
+  elif args.command == 'portal':
+      dashboardurl = "http://localhost:5000/slate_portal"
+      success = False
+      for launcher in ["xdg-open", "open"]:
+          try:
+              result = subprocess.call([launcher, dashboardurl])
+              if result == 0:
+                  success = True
+                  break
+          except OSError:
+              pass  # let loop continue
+      if not success:
+          print("Unable to open the dashboard automatically.")
+          print(f"You can open {dashboardurl} in your web browser manually.")
   else:
-    print("SLATE Catalog reload failed.")
-elif args.c1 == 'proxy':
-  if args.pid:
-    run('docker-compose exec kube kill '+args.pid)
-  elif args.list:
-    listing = "No proxies found"
-    try:
-      listing = subprocess.check_output(split('docker-compose exec kube /bin/sh -c "ps --headers a o pid,cmd | grep -E \'socat|PID\' | grep -E \'while|PID\' | grep -v grep"'))
-    except subprocess.CalledProcessError:
-      pass
-    print(listing)
-  else:
-    initcheck()
-    readycheck()
-    exitcode = 0
-    port = 0
-    while(exitcode < 1):
-      port = str(randint(30100,30201))
-      exitcode = run('docker-compose exec kube lsof -i :'+ port)
-    run('docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:'+port+' TCP:'+args.address+'; done"')
-    print(args.address+' is now accessible at localhost:'+port+' on your host')
-elif args.c1 == 'portal':
-    dashboardurl="http://localhost:5000/slate_portal"
-    success=False
-    for launcher in ["xdg-open","open"]:
-        try:
-            result=subprocess.call([launcher,dashboardurl])
-            if result==0:
-                success=True
-                break
-        except OSError:
-            pass # let loop continue
-    if not success:
-        print("Unable to open the dashboard automatically.")
-        print("You can open "+dashboardurl+" in your web browser manually.")
-else:
-  args.c1 = args.c1 or ''
-  raise ValueError('Invalid argument: ' + args.c1)
+    if args.command == '' or args.command is None:
+      sys.stderr.write(f"No argument given\n")
+    else:
+      sys.stderr.write(f"Invalid argument: {args.command}\n")
+
+
+if __name__ == "__main__":
+  # sys.excepthook = exception_handler
+  run_main()
