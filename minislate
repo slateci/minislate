@@ -148,8 +148,10 @@ class VirtProvider:
     Return list with information on containers that minislate has created
     :return: List with Dictionary containing container info
     """
-    output = self.compose(['ps']).split("\n")
-    header_line = [x for x in output if x.startswith('CONTAINER')][0]
+    output = self.compose(['ps'])
+    if not output:
+      return []
+    header_line = [x for x in output.split("\n") if x.startswith('CONTAINER')][0]
     container_info = [self.split_fields(x, header_line) for x in output]
     return [x for x in container_info if x]  # filter out entries with None
 
@@ -443,8 +445,11 @@ def run_main():
     ready_check(provider)
     provider.interactive(args.subcommand)
   elif args.command == 'status':
-    output = provider.compose(['ps']).split("\n")
-    output = [x for x in output if len(x) > 70]
+    output = provider.compose(['ps'])
+    if not output:
+      print("Could not get status")
+      sys.exit(1)
+    output = [x for x in output.split("\n") if len(x) > 70]
     print("\n".join(output))
   elif args.command == 'test':
     # don't want init
