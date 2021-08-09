@@ -53,7 +53,7 @@ class VirtProvider:
     """
     try:
       # run returns bytes or str and that confuses type checking
-      print([str(self.provider_compose_path)] + args)
+      # print([str(self.provider_compose_path)] + args)
       return subprocess.run([str(self.provider_compose_path)] + args,  # type: ignore
                             stdout=subprocess.PIPE,
                             check=True,
@@ -69,7 +69,7 @@ class VirtProvider:
     :return: Output of compose command or None if any error occurred
     """
     try:
-      print([self.provider_path] + args)
+      # print([self.provider_path] + args)
       return subprocess.run([self.provider_path] + args,  # type: ignore
                             stdout=subprocess.PIPE,
                             check=True,
@@ -103,6 +103,7 @@ class VirtProvider:
     :return: None
     """
     if self.provider_type == ProviderType.DOCKER:
+      # print([self.provider_compose_path, 'exec', container] + args)
       subprocess.call([self.provider_compose_path, 'exec', container] + args)
     elif self.provider_type == ProviderType.PODMAN:
       container_info = self.get_status()
@@ -113,7 +114,7 @@ class VirtProvider:
       return subprocess.call([self.provider_path, 'exec', container_id[0]] + args)
 
   @staticmethod
-  def split_fields(line: str, header_line: str) -> Optional[Dict[str, str]]:
+  def split_fields_podman(line: str, header_line: str) -> Optional[Dict[str, str]]:
     """
     Split output from ps command output into list
 
@@ -143,6 +144,28 @@ class VirtProvider:
       fields[field_names[index]] = field
     return fields
 
+  @staticmethod
+  def split_fields_docker(line: str, header_line: str) -> Optional[Dict[str, str]]:
+    """
+    Split output from ps command output into list
+
+    :param line: line of output from docker or podman ps
+    :param header_line: line with column names from ps output
+    :return: dict with line split into components
+    """
+    if line == header_line:
+      return None
+    # docker-compose centers some field names but not others
+    # so assume fields are separated by a double empty space
+    fields = [x.strip() for x in line.split('  ') if x != '']
+    if len(fields) != 4:
+      return None
+    fields = {'CONTAINER_ID': fields[0],
+              'COMMAND': fields[1],
+              'STATUS': fields[2],
+              'PORTS': fields[3]}
+    return fields
+
   def get_status(self) -> List[Dict[str, str]]:
     """
     Return list with information on containers that minislate has created
@@ -151,8 +174,15 @@ class VirtProvider:
     output = self.compose(['ps'])
     if not output:
       return []
-    header_line = [x for x in output.split("\n") if x.startswith('CONTAINER')][0]
-    container_info = [self.split_fields(x, header_line) for x in output]
+    if self.provider_type == ProviderType.PODMAN:
+      header_line = [x for x in output.split("\n") if x.startswith('CONTAINER')][0]
+      container_info = [self.split_fields_podman(x, header_line) for x in output.split("\n")]
+    elif self.provider_type == ProviderType.DOCKER:
+      header_line = [x for x in output.split("\n") if 'Name' in x][0]
+      container_info = [self.split_fields_docker(x, header_line) for x in output.split("\n")]
+    else:
+      sys.stderr.write(f"Provider {self.provider_type} not supported\n")
+      sys.exit(1)
     return [x for x in container_info if x]  # filter out entries with None
 
 
@@ -496,8 +526,8 @@ def run_main():
       port = 0
       while exitcode < 1:
         port = str(randint(30100,30201))
-        exitcode = run('docker-compose exec kube lsof -i :'+ port)
-      run(f'docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:{port} TCP:{args.address}; done"')
+        exitcode = provider.run('docker-compose exec kube lsof -i :'+ port)
+      provider.run(f'docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:{port} TCP:{args.address}; done"')
       print(f'{args.address} is now accessible at localhost:{port} on your host')
   elif args.command == 'portal':
       dashboardurl = "http://localhost:5000/slate_portal"
