@@ -267,7 +267,6 @@ def init_slate(args: argparse.Namespace, provider: VirtProvider) -> None:
     file.flush()
     os.fsync(file)
   if provider.compose(['up', '-d']) is not None:
-    print("init")
     print("Initializing slate components, this may take a while...")
     if provider.compose(['exec', '-T', 'slate', './init.sh']) is not None:
       if volumes:
