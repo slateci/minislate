@@ -59,7 +59,7 @@ class VirtProvider:
                             check=True,
                             text=True).stdout
     except subprocess.CalledProcessError:
-      sys.stderr.write(f"Can't run {self.provider_compose_path} with given args")
+      sys.stderr.write(f"Can't run {self.provider_compose_path} with given args\n")
       return None
 
   def run(self, args) -> Optional[str]:
@@ -75,7 +75,7 @@ class VirtProvider:
                             check=True,
                             text=True).stdout
     except subprocess.CalledProcessError:
-      sys.stderr.write(f"Can't run {self.provider_path} with given args")
+      sys.stderr.write(f"Can't run {self.provider_path} with given args\n")
       return None
 
   def interactive(self, container: str) -> None:
@@ -90,7 +90,7 @@ class VirtProvider:
       container_info = self.get_status()
       container_id = [x['CONTAINER_ID'] for x in container_info if container in x['IMAGE']]
       if len(container_id) == 0:
-        sys.stderr.write("Can't find specified container")
+        sys.stderr.write(f"Can't find specified container: {container}\n")
         sys.exit(1)
       subprocess.call([self.provider_path, 'exec', '-it', container_id[0], '/bin/sh'])
 
@@ -109,7 +109,7 @@ class VirtProvider:
       container_info = self.get_status()
       container_id = [x['CONTAINER_ID'] for x in container_info if container in x['IMAGE']]
       if len(container_id) == 0:
-        sys.stderr.write("Can't find specified container")
+        sys.stderr.write(f"Can't find specified container: {container}\n")
         sys.exit(1)
       return subprocess.call([self.provider_path, 'exec', container_id[0]] + args)
 
