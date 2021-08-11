@@ -40,11 +40,11 @@ class VirtProvider:
     if shutil.which('docker-compose'):
       return ProviderType.DOCKER, \
              pathlib.Path(shutil.which('docker-compose')), \
-             pathlib.Path(shutil.which('docker'))
+             pathlib.Path(shutil.which('docker'))  # noqa: E126
     elif shutil.which('podman-compose'):
       return ProviderType.PODMAN, \
              pathlib.Path(shutil.which('podman-compose')), \
-             pathlib.Path(shutil.which('podman'))
+             pathlib.Path(shutil.which('podman'))  # noqa: E126
     else:
       raise Exception("Can't get virtualization provider type")
 
