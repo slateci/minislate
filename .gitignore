@@ -1,2 +1,6 @@
 /docker-compose.yml
 /kube/hyperkube.tar
+
+# IDE metadata
+.idea/
+.vscode/
