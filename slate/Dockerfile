@@ -13,14 +13,7 @@ COPY slate/resources/yum.repos.d/* /etc/yum.repos.d/
 
 # Package installs/updates:
 RUN yum install -y epel-release
-RUN yum install -y ca-certificates git vim which kubectl-1.19.1 boost zlib openssl libcurl openssl gcc libffi-devel net-tools supervisor
-
-# Install Python 3 package and modify yum to still use Python 2 (prevents errors):
-RUN yum install -y python3-devel && \
-    alternatives --install /usr/bin/python python /usr/bin/python2 50 && \
-    alternatives --install /usr/bin/python python /usr/bin/python3 60
-RUN sed -i 's:bin/python:bin/python2.7:g' /usr/bin/yum && \
-    sed -i 's:bin/python:bin/python2.7:g' /usr/libexec/urlgrabber-ext-down
+RUN yum install -y ca-certificates git vim which kubectl-1.19.1 boost zlib openssl libcurl openssl gcc libffi-devel net-tools supervisor python3-devel
 
 # Install the SLATE API Server and clean up yum:
 RUN yum install -y slate-api-server && \
@@ -48,7 +41,7 @@ RUN git clone https://github.com/slateci/slate-portal.git .
 
 # Configure the SLATE Portal with a modern version of Pip:
 RUN pip3 install virtualenv
-RUN bash -c 'virtualenv venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
+RUN bash -c 'virtualenv --python=/usr/bin/python3 venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
 RUN mkdir ./instance && \
     cp ./portal/portal.conf ./instance/
 RUN sed -i -e 's/localhost/0\.0\.0\.0/g' -e 's/ssl_context=([^)]*)//' ./run_*
