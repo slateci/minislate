@@ -4,7 +4,6 @@ import shutil
 import time
 from typing import Optional, Dict, List, Any
 from random import randint
-from subprocess import DEVNULL
 from enum import Enum
 
 import subprocess
@@ -39,9 +38,13 @@ class VirtProvider:
     :return: tuple with provider type and path to provider binary
     """
     if shutil.which('docker-compose'):
-      return ProviderType.DOCKER, pathlib.Path(shutil.which('docker-compose')), pathlib.Path(shutil.which('docker'))
+      return ProviderType.DOCKER, \
+             pathlib.Path(shutil.which('docker-compose')), \
+             pathlib.Path(shutil.which('docker'))
     elif shutil.which('podman-compose'):
-      return ProviderType.PODMAN, pathlib.Path(shutil.which('podman-compose')), pathlib.Path(shutil.which('podman'))
+      return ProviderType.PODMAN, \
+             pathlib.Path(shutil.which('podman-compose')), \
+             pathlib.Path(shutil.which('podman'))
     else:
       raise Exception("Can't get virtualization provider type")
 
@@ -53,13 +56,13 @@ class VirtProvider:
     """
     try:
       # run returns bytes or str and that confuses type checking
-      print([str(self.provider_compose_path)] + args)
+      # print([str(self.provider_compose_path)] + args)
       return subprocess.run([str(self.provider_compose_path)] + args,  # type: ignore
                             stdout=subprocess.PIPE,
                             check=True,
                             text=True).stdout
     except subprocess.CalledProcessError:
-      sys.stderr.write(f"Can't run {self.provider_compose_path} with given args")
+      sys.stderr.write(f"Can't run {self.provider_compose_path} with given args\n")
       return None
 
   def run(self, args) -> Optional[str]:
@@ -69,13 +72,13 @@ class VirtProvider:
     :return: Output of compose command or None if any error occurred
     """
     try:
-      print([self.provider_path] + args)
+      # print([self.provider_path] + args)
       return subprocess.run([self.provider_path] + args,  # type: ignore
                             stdout=subprocess.PIPE,
                             check=True,
                             text=True).stdout
     except subprocess.CalledProcessError:
-      sys.stderr.write(f"Can't run {self.provider_path} with given args")
+      sys.stderr.write(f"Can't run {self.provider_path} with given args\n")
       return None
 
   def interactive(self, container: str) -> None:
@@ -90,7 +93,7 @@ class VirtProvider:
       container_info = self.get_status()
       container_id = [x['CONTAINER_ID'] for x in container_info if container in x['IMAGE']]
       if len(container_id) == 0:
-        sys.stderr.write("Can't find specified container")
+        sys.stderr.write(f"Can't find specified container: {container}\n")
         sys.exit(1)
       subprocess.call([self.provider_path, 'exec', '-it', container_id[0], '/bin/sh'])
 
@@ -103,17 +106,18 @@ class VirtProvider:
     :return: None
     """
     if self.provider_type == ProviderType.DOCKER:
+      # print([self.provider_compose_path, 'exec', container] + args)
       subprocess.call([self.provider_compose_path, 'exec', container] + args)
     elif self.provider_type == ProviderType.PODMAN:
       container_info = self.get_status()
       container_id = [x['CONTAINER_ID'] for x in container_info if container in x['IMAGE']]
       if len(container_id) == 0:
-        sys.stderr.write("Can't find specified container")
+        sys.stderr.write(f"Can't find specified container: {container}\n")
         sys.exit(1)
       return subprocess.call([self.provider_path, 'exec', container_id[0]] + args)
 
   @staticmethod
-  def split_fields(line: str, header_line: str) -> Optional[Dict[str, str]]:
+  def split_fields_podman(line: str, header_line: str) -> Optional[Dict[str, str]]:
     """
     Split output from ps command output into list
 
@@ -139,8 +143,30 @@ class VirtProvider:
     field_names[0] = 'CONTAINER_ID'
     # use the field indices to process the input line
     for index in range(len(field_names)):
-      field = line[field_indices[index]:field_indices[index+1]].strip()
+      field = line[field_indices[index]:field_indices[index + 1]].strip()
       fields[field_names[index]] = field
+    return fields
+
+  @staticmethod
+  def split_fields_docker(line: str, header_line: str) -> Optional[Dict[str, str]]:
+    """
+    Split output from ps command output into list
+
+    :param line: line of output from docker or podman ps
+    :param header_line: line with column names from ps output
+    :return: dict with line split into components
+    """
+    if line == header_line:
+      return None
+    # docker-compose centers some field names but not others
+    # so assume fields are separated by a double empty space
+    fields = [x.strip() for x in line.split('  ') if x != '']
+    if len(fields) != 4:
+      return None
+    fields = {'CONTAINER_ID': fields[0],
+              'COMMAND': fields[1],
+              'STATUS': fields[2],
+              'PORTS': fields[3]}
     return fields
 
   def get_status(self) -> List[Dict[str, str]]:
@@ -151,8 +177,15 @@ class VirtProvider:
     output = self.compose(['ps'])
     if not output:
       return []
-    header_line = [x for x in output.split("\n") if x.startswith('CONTAINER')][0]
-    container_info = [self.split_fields(x, header_line) for x in output]
+    if self.provider_type == ProviderType.PODMAN:
+      header_line = [x for x in output.split("\n") if x.startswith('CONTAINER')][0]
+      container_info = [self.split_fields_podman(x, header_line) for x in output.split("\n")]
+    elif self.provider_type == ProviderType.DOCKER:
+      header_line = [x for x in output.split("\n") if 'Name' in x][0]
+      container_info = [self.split_fields_docker(x, header_line) for x in output.split("\n")]
+    else:
+      sys.stderr.write(f"Provider {self.provider_type} not supported\n")
+      sys.exit(1)
     return [x for x in container_info if x]  # filter out entries with None
 
 
@@ -160,9 +193,10 @@ def exception_handler(exception_type, exception, traceback):
     print(exception)
 
 
-def init_check(initerr='MiniSLATE is not initialized. Run: `./minislate init`'):
+def init_check(initerr='MiniSLATE is not initialized. Run: `./minislate init`') -> bool:
     if not os.path.isfile('docker-compose.yml'):
         raise EnvironmentError(initerr)
+    return True
 
 
 def ready_check(provider: VirtProvider, ready_error: str = None) -> None:
@@ -211,8 +245,8 @@ def init_slate(args: argparse.Namespace, provider: VirtProvider) -> None:
   :return: None
   """
   if os.path.isfile('docker-compose.yml'):
-    raise EnvironmentError(
-      'MiniSLATE is already initialized. Run `./minislate destroy && ./minislate init` to reset your environment.')
+    raise EnvironmentError('MiniSLATE is already initialized. Run '
+                           '`./minislate destroy && ./minislate init` to reset your environment.')
   ports = []
   volumes = []
   if args.ports:
@@ -236,8 +270,9 @@ def init_slate(args: argparse.Namespace, provider: VirtProvider) -> None:
     file.write(contents)
     file.flush()
     os.fsync(file)
-  if provider.compose(['up', '-d']) is None:
-    if provider.compose(['exec', '-T', 'slate', './init.sh']) is None:
+  if provider.compose(['up', '-d']) is not None:
+    print("Initializing slate components, this may take a while...")
+    if provider.compose(['exec', '-T', 'slate', './init.sh']) is not None:
       if volumes:
         print('\033[1m' + "Volume Mounts:" + '\033[0m' + '\n' + volumes)
       print('\n' + '\033[1m' + "DONE! MiniSLATE is now initialized." + '\033[0m')
@@ -267,7 +302,8 @@ def unpause_minislate(provider: VirtProvider) -> None:
   :return: None
   """
   container_info = provider.get_status()
-  paused = [x['CONTAINER_ID'] for x in container_info if x['STATUS'].lower() == 'paused']  # type: ignore
+
+  paused = [x['CONTAINER_ID'] for x in container_info if x['STATUS'].lower() == 'paused']  # type: ignore # noqa: E501
   if len(paused) == 0:
     raise EnvironmentError('MiniSLATE is not paused.')
   if provider.provider_type == ProviderType.PODMAN:
@@ -288,7 +324,8 @@ def destroy_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
   yes = {'yes', 'y', 'ye'}
   choice = ''
   if not args.confirm:
-    print("Are you sure you'd like to completely destroy your MiniSLATE environment? (y/N) ", end='')
+    print("Are you sure you'd like to completely destroy your MiniSLATE environment? (y/N) ",
+          end='')
     choice = input().lower()
   if choice in yes or args.confirm:
     if provider.provider_type == ProviderType.PODMAN:
@@ -324,11 +361,11 @@ def build_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
     print('Doing nothing.')
   elif args.subcommand == 'slate':
     print('Building the slate container...')
-    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
+    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate']  + args.subcommand)
     print('miniSLATE slate container built successfully')
   else:
     print('Building the slate container...')
-    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
+    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate']  + args.subcommand )
     print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
 
 
@@ -343,10 +380,20 @@ def test_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
     kill_test(provider)
   else:
     if os.path.isfile('docker-compose.yml'):
-      raise EnvironmentError("Can not run tests on existing environment. Please destroy your environment to run tests.")
-    provider.compose(['-f', 'docker-compose-test.yml', 'up', '-d',  '--build'])
-    provider.compose(['-f', 'docker-compose-test.yml', 'exec', 'test', '/minislate/minislate', 'init'])
-    result = provider.compose(['-f', 'docker-compose-test.yml', 'exec', 'test', '/minislate/test/test'])
+      raise EnvironmentError("Can not run tests on existing environment. "
+                             "Please destroy your environment to run tests.")
+    provider.compose(['-f', 'docker-compose-test.yml', 'up', '-d', '--build'])
+    provider.compose(['-f',
+                      'docker-compose-test.yml',
+                      'exec',
+                      'test',
+                      '/minislate/minislate',
+                      'init'])
+    result = provider.compose(['-f',
+                               'docker-compose-test.yml',
+                               'exec',
+                               'test',
+                               '/minislate/test/test'])
     if args.debug:
       print('Entering debug mode...')
       print('Exiting this shell will destroy the test environment')
@@ -365,10 +412,19 @@ def create_arg_parsers() -> argparse.ArgumentParser:
   subparsers = parser.add_subparsers(title="commands", dest="command")
 
   init = subparsers.add_parser('init', help='initialize minislate containers')
-  init.add_argument('-p', '--port', '--publish', dest='ports', action='append', nargs='?',
-                    metavar='hostPort or hostPort:containerPort', help='Example: `./minislate init -p 3000`')
-  init.add_argument('-v', '--volume', dest='volumes', action='append', nargs='?',
-                    metavar='hostDir or hostDir:containerDir', help='Example: `./minislate init -v ~/workdir`')
+  init.add_argument('-p', '--port',
+                    '--publish',
+                    dest='ports',
+                    action='append',
+                    nargs='?',
+                    metavar='hostPort or hostPort:containerPort',
+                    help='Example: `./minislate init -p 3000`')
+  init.add_argument('-v', '--volume',
+                    dest='volumes',
+                    action='append',
+                    nargs='?',
+                    metavar='hostDir or hostDir:containerDir',
+                    help='Example: `./minislate init -v ~/workdir`')
   init.add_argument('-s', '--selenium', dest='selenium', action='store_true',
                     help='Runs minislate without TTY, for use with Selenium test infrastructure')
 
@@ -376,14 +432,25 @@ def create_arg_parsers() -> argparse.ArgumentParser:
   subparsers.add_parser('unpause', help='unpause minislate containers')
 
   destroy = subparsers.add_parser('destroy', help='completely destroy environment')
-  destroy.add_argument('--rmi', dest='rmi', action='store_true', help='Example: `./minislate destroy --rmi`')
-  destroy.add_argument('-y', dest='confirm', action='store_true', help='Example: `./minislate destroy -y`')
+  destroy.add_argument('--rmi', dest='rmi',
+                       action='store_true',
+                       help='Example: `./minislate destroy --rmi`')
+  destroy.add_argument('-y',
+                       dest='confirm',
+                       action='store_true',
+                       help='Example: `./minislate destroy -y`')
 
   subparsers.add_parser('status', help='view status of minislate containers')
 
   test = subparsers.add_parser('test', help='run test of the minislate environment')
-  test.add_argument('--debug', dest='debug', action='store_true', help='Example: `./minislate test --debug`')
-  test.add_argument('--kill', dest='kill', action='store_true', help='Example: `./minislate test --kill`')
+  test.add_argument('--debug',
+                    dest='debug',
+                    action='store_true',
+                    help='Example: `./minislate test --debug`')
+  test.add_argument('--kill',
+                    dest='kill',
+                    action='store_true',
+                    help='Example: `./minislate test --kill`')
 
   build = subparsers.add_parser('build', help='build/rebuild container images')
   build.add_argument('subcommand', metavar='container', nargs='?', choices=[
@@ -409,7 +476,10 @@ def create_arg_parsers() -> argparse.ArgumentParser:
 
   proxy = subparsers.add_parser('proxy', help='proxy an internal socket address to the host')
   proxygroup = proxy.add_mutually_exclusive_group()
-  proxygroup.add_argument('--list', dest='list', action='store_true', help='Example: `./minislate proxy list`')
+  proxygroup.add_argument('--list',
+                          dest='list',
+                          action='store_true',
+                          help='Example: `./minislate proxy list`')
   proxygroup.add_argument('--rm', metavar='pid', dest='pid', nargs='?',
                           help='remove a proxy already in place by its PID')
   proxygroup.add_argument('address', metavar='address', nargs='?',
@@ -467,7 +537,8 @@ def run_main():
     ready_check(provider)
     retcode = provider.exec('slate', ['sh',
                                       '-c',
-                                      'curl --fail -X POST $(cat ~/.slate/endpoint)/v1alpha3/update_apps?token=$(cat ~/.slate/token)'])
+                                      'curl --fail -X POST '
+                                      '$(cat ~/.slate/endpoint)/v1alpha3/update_apps?token=$(cat ~/.slate/token)'])  # noqa: E501
     if retcode == 0:
       print("SLATE Catalog has been reloaded.")
     else:
@@ -495,9 +566,10 @@ def run_main():
       exitcode = 0
       port = 0
       while exitcode < 1:
-        port = str(randint(30100,30201))
-        exitcode = run('docker-compose exec kube lsof -i :'+ port)
-      run(f'docker-compose exec -d kube /bin/sh -c "while true; do socat TCP-LISTEN:{port} TCP:{args.address}; done"')
+        port = str(randint(30100, 30201))
+        exitcode = provider.run('docker-compose exec kube lsof -i :' + port)
+      provider.run(f'docker-compose exec -d kube /bin/sh -c "while true; do socat '
+                   f'TCP-LISTEN:{port} TCP:{args.address}; done"')
       print(f'{args.address} is now accessible at localhost:{port} on your host')
   elif args.command == 'portal':
       dashboardurl = "http://localhost:5000/slate_portal"
@@ -515,11 +587,11 @@ def run_main():
           print(f"You can open {dashboardurl} in your web browser manually.")
   else:
     if args.command == '' or args.command is None:
-      sys.stderr.write(f"No argument given\n")
+      sys.stderr.write("No argument given\n")
     else:
       sys.stderr.write(f"Invalid argument: {args.command}\n")
 
 
 if __name__ == "__main__":
-  # sys.excepthook = exception_handler
+  sys.excepthook = exception_handler
   run_main()

@@ -3,7 +3,7 @@ This project provides a local development environment for the [SLATE project](ht
 
 ## Minimum Requirements
 - Linux (2 cores, 4GB memory, 15GB storage) or MacOS
-- Python (3 or 2.7, 'python' must be in your PATH)
+- Python (3.6+, 'python' must be in your PATH)
 - [DockerCE](https://docs.docker.com/install/#supported-platforms)
 - [Docker-Compose](https://github.com/docker/compose/releases) (installed with Docker for Mac)
 
