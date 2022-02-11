@@ -361,11 +361,17 @@ def build_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
     print('Doing nothing.')
   elif args.subcommand == 'slate':
     print('Building the slate container...')
-    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate']  + args.subcommand)
+    if args.subcommand:
+      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'].append(args.subcommand))
+    else:
+      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
     print('miniSLATE slate container built successfully')
   else:
     print('Building the slate container...')
-    provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate']  + args.subcommand )
+    if args.subcommand:
+      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'].append(args.subcommand))
+    else:
+      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
     print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
 
 
