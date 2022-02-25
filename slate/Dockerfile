@@ -13,7 +13,7 @@ COPY slate/resources/yum.repos.d/* /etc/yum.repos.d/
 
 # Package installs/updates:
 RUN yum install -y epel-release
-RUN yum install -y ca-certificates git vim which kubectl-1.19.1 boost zlib openssl libcurl openssl gcc libffi-devel net-tools supervisor python3-devel
+RUN yum install -y ca-certificates git vim which kubectl-1.19.1 boost zlib libcurl openssl gcc libffi-devel net-tools supervisor python3-devel
 
 # Install the SLATE API Server and clean up yum:
 RUN yum install -y slate-api-server && \
