@@ -3,13 +3,14 @@ FROM centos:7
 
 # Docker image build arguments:
 ARG endpoint='http://localhost:18080'
+ARG portalbranch='master'
 ARG token='5B121807-7D5D-407A-8E22-5F001EF594D4'
 
 # Docker container environmental variables:
 ENV KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 # Set up custom yum repos:
-COPY slate/resources/yum.repos.d/* /etc/yum.repos.d/
+COPY ./resources/yum.repos.d/* /etc/yum.repos.d/
 
 # Package installs/updates:
 RUN yum install -y epel-release
@@ -36,8 +37,7 @@ RUN tar xzvf slate-linux.tar.gz && \
 WORKDIR /opt/slate-portal
 
 # Clone the SLATE Portal repo:
-# TODO: Clone a specific tag instead for slate-portal.git rather than the master branch.
-RUN git clone https://github.com/slateci/slate-portal.git .
+RUN git clone --branch ${portalbranch} https://github.com/slateci/slate-portal.git .
 
 # Configure the SLATE Portal with a modern version of Pip:
 RUN pip3 install virtualenv
@@ -67,9 +67,9 @@ RUN echo ${token} > ./.slate/token && \
 WORKDIR /
 
 # Copy remaining resources:
-COPY slate/resources/supervisord.conf /etc/supervisord.conf
-COPY slate/resources/users/slate_portal_user .
-COPY slate/scripts/init.sh .
+COPY ./resources/supervisord.conf /etc/supervisord.conf
+COPY ./resources/users/slate_portal_user .
+COPY ./scripts/init.sh .
 RUN chmod +x init.sh
 
 # Ports:
