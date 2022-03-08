@@ -578,7 +578,7 @@ def run_main():
                    f'TCP-LISTEN:{port} TCP:{args.address}; done"')
       print(f'{args.address} is now accessible at localhost:{port} on your host')
   elif args.command == 'portal':
-      dashboardurl = "http://localhost:5000/slate_portal"
+      dashboardurl = "http://localhost:5050/slate_portal"
       success = False
       for launcher in ["xdg-open", "open"]:
           try:

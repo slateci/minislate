@@ -34,7 +34,7 @@ $ ./minislate status
 minislate_db_1      java -jar DynamoDBLocal.jar      Up      8000/tcp                                                                                                                                                                       
 minislate_kube_1    /bin/bash -c exec /sbin/in ...   Up      0.0.0.0:30000->30000/tcp, 0.0.0.0:30001->30001/tcp, 0.0.0.0:30002->30002/tcp ... 0.0.0.0:30100->30100/tcp, 0.0.0.0:6443->6443/tcp, 0.0.0.0:8080->80/tcp 
 minislate_nfs_1     /usr/bin/nfsd.sh                 Up                                                                                                                                                                                     
-minislate_slate_1   /usr/bin/slate-service           Up      0.0.0.0:18080->18080/tcp, 0.0.0.0:5000->5000/tcp, 0.0.0.0:5100->5100/tcp   
+minislate_slate_1   /usr/bin/slate-service           Up      0.0.0.0:18080->18080/tcp, 0.0.0.0:5050->5050/tcp, 0.0.0.0:5100->5100/tcp   
 ```
 _No parameters_.
 
