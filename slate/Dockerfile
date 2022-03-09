@@ -73,4 +73,4 @@ COPY ./scripts/init.sh .
 RUN chmod +x init.sh
 
 # Ports:
-EXPOSE 5050 51000 18080
+EXPOSE 5000 51000 18080
