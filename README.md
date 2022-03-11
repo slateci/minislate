@@ -1,68 +1,126 @@
 # MiniSLATE
+
 This project provides a local development environment for the [SLATE project](http://slateci.io/).
 
 ## Minimum Requirements
+
 - Linux (2 cores, 4GB memory, 15GB storage) or MacOS
 - Python (3.9+, 'python' must be in your PATH)
 - [DockerCE](https://docs.docker.com/install/#supported-platforms)
 - [Docker-Compose](https://github.com/docker/compose/releases) (installed with Docker for Mac)
 
-On Linux, the user running MiniSLATE must be a member of the Docker group (or root).
-Users can be added to the Docker group with: `sudo usermod -a -G docker <username>`
-
 ## Getting Started
+
+### Enable Docker
+
 After installing the dependency requirements and pulling the MiniSLATE repository:
+* Make sure your Docker is running using:
 
-Make sure your Docker is running using `systemctl status docker`.
+  ```shell
+  systemctl status docker
+  ```
+  
+* To start Docker run:
 
-To start docker run `systemctl enable --now docker`.
+  ```shell
+  systemctl enable --now docker
+  ```
+  
+* On MacOS make sure the Docker Desktop application is running.
+* On Linux, the user running MiniSLATE must be a member of the `docker` group. Users can be added with:
 
-On MacOS make sure the Docker Desktop application is running.
+  ```shell
+  sudo usermod -a -G docker <username>
+  ```
 
-If desired, `source shell_aliases` will allow you to run the minislate command and the internal slate and kubectl commands from any directory.
+### Configure Shell Aliases (Optional)
 
-Initialize the environment with `./minislate init`
+The following command will allow you to run the `minislate` command and the internal `slate` and `kubectl` commands from any directory:
 
-You can custom build your images using `./minislate build`, but this is not necessary for a functioning minislate environment.
+```shell
+source shell_aliases
+ ```
 
-__TIP:__ Access local directories by mapping them into the SLATE container: `./minislate init -v ~/WorkDir:/mnt`
+### Initialize MiniSLATE
 
-[Utilize SLATE](https://slateci.io/docs/tools/index.html) with `./minislate slate ...(cluster list, group list, etc)...`
+Initialize the environment with pre-built Docker images:
 
-Or shell into the container and run it "natively":
+```shell
+./minislate init
 ```
-$ ./minislate shell slate
-# slate ...(cluster list, group list, etc)...
+
+If you want to map local directories into the SLATE container specify a volume:
+
+```shell
+./minislate init -v ~/WorkDir:/mnt
 ```
 
-To **completely destroy** the environment such that it can be created again run: `./minislate destroy`
+#### Build on-the-fly (Optional)
 
-Running `./minislate destroy --rmi` will remove the built container images from your machine. This can nescasary if there was a failure or error in the build proccess. It is also needed to completely remove miniSLATE from your machine.
+Alternatively, if you need to perform actions like test different versions of the SLATE Portal code other than what is baked into the pre-built Docker image:
+1. Modify the `slate/Dockerfile` in this repository.
+2. Build the images from source:
+   ```shell
+   ./minislate build
+   ```
+
+### Use SLATE CLI
+
+Run [SLATE CLI](https://slateci.io/docs/tools/index.html) commands by passing them directly to `./minislate`:
+
+```shell
+./minislate slate ...(cluster list, group list, etc)...
+```
+
+or by starting a shell in the container and running them "natively":
+
+```shell
+[your@localmachine]$ ./minislate shell slate
+[root@ceb03bcaca72]$ slate ...(cluster list, group list, etc)...
+```
+
+### Destroy Environment
+
+To completely destroy the environment so that it can be created again run:
+
+```shell
+./minislate destroy
+```
+
+To remove the images from your machine entirely add the option: `--rmi`.
+* This can necessary if there was a failure or error in the build process.
+* It is also needed to completely remove MiniSLATE from your machine.
 
 For a more detailed description of each MiniSLATE command view [COMMANDS.md](https://github.com/slateci/minislate/blob/master/COMMANDS.md) 
 
 ## Internal Details
-MiniSLATE is a docker-compose orchestrated standard SLATE deployment (with a couple performance tweaks for personal machines).
 
-MiniSLATE spins up 4 containers with docker-compose. These include:
+MiniSLATE is a docker-compose orchestrated standard SLATE deployment (with a couple performance tweaks for personal machines). MiniSLATE spins up 4 containers with `docker-compose`. These include:
 - [A Docker-in-Docker Kubernetes node](https://github.com/slateci/minislate/blob/master/kube/Dockerfile)
 - [A SLATE management container](https://github.com/slateci/minislate/blob/master/slate/Dockerfile)
 - [A DynamoDB container](https://hub.docker.com/r/dwmkerr/dynamodb) used by the SLATE API server
 - [A storage container simulating an NFS share](https://hub.docker.com/r/itsthenetwork/nfs-server-alpine)
 
 ## Troubleshooting Steps
-Many errors that you will encounter with minislate are state related. They may be caused by a interruption in the init or build proccess. Unexpected restarts of certain system daemons can also cause problems. Most state related issues can be resolved by re-initializing the environment. 
 
-`./minislate destroy && ./minislate init`
+Many errors that you will encounter with MiniSLATE are state related. They may be caused by an interruption in the `init` or `build` process. Unexpected restarts of certain system daemons can also cause problems. Most state related issues can be resolved by re-initializing the environment. 
 
-Be sure this proccess doesn't get interrupted, or you may have to destroy again. At this point if the initialization fails for any reason, you may be dealing with an issue related to the images themselves. To remove and rebuild container images run the following:
+```shell
+./minislate destroy && ./minislate init
+```
 
-`./minislate destroy --rmi && ./minislate init`
+Be sure this process does not get interrupted, or you may have to destroy again. At this point if the initialization fails for any reason, you may be dealing with an issue related to the images themselves. To remove and rebuild container images run the following:
+
+```shell
+./minislate destroy --rmi && ./minislate init
+```
 
 ## Test Infrastructure
-It may be nescasary to spin up Minislate in an automated way. For example, the Selenium portal tests automatically creates a Minislate cluster to test against. These clusters may require that `tty` is disabled inside the container. Minislate init can be run with the --selenium or -s flag to disable `tty` for automated testing.
+
+It may be necessary to spin up MiniSLATE in an automated way. For example, the Selenium portal tests automatically creates a MiniSLATE cluster to test against. These clusters may require that `tty` is disabled inside the container. `minislate init` can be run with the `--selenium` or `-s` flag to disable `tty` for automated testing.
 
 Example:
 
-`./minislate init -s`
-
+```shell
+./minislate init -s
+```
