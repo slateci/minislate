@@ -587,6 +587,6 @@ def run_main():
 
 
 if __name__ == "__main__":
-    dockerimage = 'hub.opensciencegrid.org/slate/minislate:1.0.4'
+    from config import *
     sys.excepthook = exception_handler
     run_main()
