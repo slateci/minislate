@@ -263,6 +263,7 @@ def init_slate(args: argparse.Namespace, provider: VirtProvider) -> None:
     contents = file.read()
   contents = contents.replace('# {PORTS}', ports)
   contents = contents.replace('# {VOLUMES}', volumes)
+  contents = contents.replace('{IMAGE}', dockerimage)
   if args.selenium:
     contents = contents.replace('tty: true', 'tty: false')
     contents = contents.replace('stdin_open: true', 'stdin_open: false')
@@ -353,27 +354,14 @@ def build_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
   :param provider: Provider object with information on system to use
   :return: None
   """
-  args.subcommand = args.subcommand or ''
-  print('WARNING Building locally can take more than 15 minutes')
-  print('It is recommended to use hosted images by running ./minislate init')
-  if args.subcommand == 'kube':
-    print('Minislate kube container is deprecated in this version. Minislate now relies on K3s.')
-    print('Doing nothing.')
-  elif args.subcommand == 'slate':
-    print('Building the slate container...')
-    if args.subcommand:
-      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'].append(args.subcommand))
-    else:
-      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
-    print('miniSLATE slate container built successfully')
-  else:
-    print('Building the slate container...')
-    if args.subcommand:
-      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'].append(args.subcommand))
-    else:
-      provider.run(['build', '.', '--file=slate/Dockerfile', '--tag=slateci/ms-slate'])
-    print('MiniSLATE build complete run `./minislate init` to initialize locally built images')
 
+  tagoption = "--tag={}".format(dockerimage)
+
+  print('WARNING Building locally can take more than 15 minutes')
+  print('It is recommended to use hosted images by running `./minislate init` instead.')
+  print('Building the slate container...')
+  provider.run(['build', './slate', '--file=slate/Dockerfile', tagoption])
+  print('MiniSLATE build complete run `./minislate init` to initialize locally built image')
 
 def test_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
   """
@@ -578,7 +566,7 @@ def run_main():
                    f'TCP-LISTEN:{port} TCP:{args.address}; done"')
       print(f'{args.address} is now accessible at localhost:{port} on your host')
   elif args.command == 'portal':
-      dashboardurl = "http://localhost:5000/slate_portal"
+      dashboardurl = "http://localhost:5050/slate_portal"
       success = False
       for launcher in ["xdg-open", "open"]:
           try:
@@ -599,5 +587,6 @@ def run_main():
 
 
 if __name__ == "__main__":
-  sys.excepthook = exception_handler
-  run_main()
+    from config import *
+    sys.excepthook = exception_handler
+    run_main()
