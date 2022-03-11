@@ -263,6 +263,7 @@ def init_slate(args: argparse.Namespace, provider: VirtProvider) -> None:
     contents = file.read()
   contents = contents.replace('# {PORTS}', ports)
   contents = contents.replace('# {VOLUMES}', volumes)
+  contents = contents.replace('{IMAGE}', dockerimage)
   if args.selenium:
     contents = contents.replace('tty: true', 'tty: false')
     contents = contents.replace('stdin_open: true', 'stdin_open: false')
@@ -354,7 +355,7 @@ def build_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
   :return: None
   """
 
-  tagoption = "--tag={}".format(dockertag)
+  tagoption = "--tag={}".format(dockerimage)
 
   print('WARNING Building locally can take more than 15 minutes')
   print('It is recommended to use hosted images by running `./minislate init` instead.')
@@ -586,6 +587,6 @@ def run_main():
 
 
 if __name__ == "__main__":
-    dockertag = 'hub.opensciencegrid.org/slate/minislate:1.0.4'
+    dockerimage = 'hub.opensciencegrid.org/slate/minislate:1.0.4'
     sys.excepthook = exception_handler
     run_main()
