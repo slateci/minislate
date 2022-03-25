@@ -273,10 +273,10 @@ def init_slate(args: argparse.Namespace, provider: VirtProvider) -> None:
     os.fsync(file)
   if provider.compose(['up', '-d']) is not None:
     print("Initializing slate components, this may take a while...")
-    # if provider.compose(['exec', '-T', 'slate', './init.sh']) is not None:
-    #   if volumes:
-    #     print('\033[1m' + "Volume Mounts:" + '\033[0m' + '\n' + volumes)
-    #   print('\n' + '\033[1m' + "DONE! MiniSLATE is now initialized." + '\033[0m')
+    if provider.compose(['exec', '-T', 'slate', './init.sh']) is not None:
+      if volumes:
+        print('\033[1m' + "Volume Mounts:" + '\033[0m' + '\n' + volumes)
+      print('\n' + '\033[1m' + "DONE! MiniSLATE is now initialized." + '\033[0m')
 
 
 def pause_minislate(provider: VirtProvider) -> None:
