@@ -56,7 +56,7 @@ class VirtProvider:
     """
     try:
       # run returns bytes or str and that confuses type checking
-      # print([str(self.provider_compose_path)] + args)
+      print([str(self.provider_compose_path)] + args)
       return subprocess.run([str(self.provider_compose_path)] + args,  # type: ignore
                             stdout=subprocess.PIPE,
                             check=True,
@@ -72,7 +72,7 @@ class VirtProvider:
     :return: Output of compose command or None if any error occurred
     """
     try:
-      # print([self.provider_path] + args)
+      print([self.provider_path] + args)
       return subprocess.run([self.provider_path] + args,  # type: ignore
                             stdout=subprocess.PIPE,
                             check=True,
