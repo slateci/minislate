@@ -356,11 +356,12 @@ def build_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:
   """
 
   tagoption = "--tag={}".format(dockerimage)
+  buildargs = "portalbranch={}".format(portalbranch)
 
   print('WARNING Building locally can take more than 15 minutes')
   print('It is recommended to use hosted images by running `./minislate init` instead.')
   print('Building the slate container...')
-  provider.run(['build', './slate', '--file=slate/Dockerfile', tagoption])
+  provider.run(['build', '--file=slate/Dockerfile', tagoption, '--build-arg', buildargs, './slate'])
   print('MiniSLATE build complete run `./minislate init` to initialize locally built image')
 
 def test_minislate(args: argparse.Namespace, provider: VirtProvider) -> None:

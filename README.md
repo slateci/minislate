@@ -101,6 +101,10 @@ MiniSLATE is a docker-compose orchestrated standard SLATE deployment (with a cou
 - [A DynamoDB container](https://hub.docker.com/r/dwmkerr/dynamodb) used by the SLATE API server
 - [A storage container simulating an NFS share](https://hub.docker.com/r/itsthenetwork/nfs-server-alpine)
 
+MiniSLATE also includes a `config.py` that may be used to control several parameters including:
+* `dockerimage`
+* `portalbranch`
+
 ## Troubleshooting Steps
 
 Many errors that you will encounter with MiniSLATE are state related. They may be caused by an interruption in the `init` or `build` process. Unexpected restarts of certain system daemons can also cause problems. Most state related issues can be resolved by re-initializing the environment. 
