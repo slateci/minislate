@@ -41,7 +41,7 @@ RUN git clone --branch ${portalbranch} https://github.com/slateci/slate-portal.g
 
 # Configure the SLATE Portal with a modern version of Pip:
 RUN pip3 install virtualenv
-RUN bash -c 'virtualenv --python=/usr/bin/python3 venv && source venv/bin/activate && pip install --no-cache-dir -r requirements.txt'
+RUN bash -c 'virtualenv --python=/usr/bin/python3 venv && source venv/bin/activate && pip install --no-cache-dir -r ./resources/docker/requirements.txt'
 COPY ./resources/portal.conf ./instance/portal.conf
 RUN sed -i -e 's/localhost/0\.0\.0\.0/g' -e 's/ssl_context=([^)]*)//' ./run_*
 
