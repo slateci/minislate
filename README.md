@@ -1,5 +1,7 @@
 # MiniSLATE
 
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+
 This project provides a local development environment for the [SLATE project](http://slateci.io/).
 
 ## Minimum Requirements
