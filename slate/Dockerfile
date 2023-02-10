@@ -67,7 +67,7 @@ WORKDIR /
 
 # Copy remaining resources:
 COPY ./resources/supervisord.conf /etc/supervisord.conf
-COPY ./resources/users/slate_portal_user .
+COPY ./resources/users/slate_portal_user /slate/users/slate_portal_user
 COPY ./scripts/init.sh .
 RUN chmod +x init.sh
 
