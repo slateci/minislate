@@ -46,6 +46,9 @@ Vagrant.configure("2") do |config|
     # Customize the hostname:
     node.vm.hostname = ENV['HOSTNAME']
 
+#     # Customize the forwarded ports:
+#     node.vm.network "forwarded_port", guest: "5050", host: "5050"
+
     # VirtualBox Provider
     node.vm.provider "virtualbox" do |vb|
       # Customize the number of CPUs on the VM:
@@ -64,7 +67,9 @@ Vagrant.configure("2") do |config|
       yum install -y yum-utils
       yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
       yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-      systemctl start docker
+      systemctl enable --now docker
+      yum install -y python3
+      alternatives --set python /usr/bin/python3
     SHELL
 
   end

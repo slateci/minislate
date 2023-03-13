@@ -1,34 +1,42 @@
 version: '3.1'
 services:
   db:
-    image: dwmkerr/dynamodb
-    restart: always
-  kube:
-    image: rancher/k3s:v1.19.5-k3s1-amd64
-    restart: always
-    tty: true
-    privileged: true
-    command: server --https-listen-port 6443 --kube-apiserver-arg service-node-port-range=30000-30100
+    image: docker.io/amazon/dynamodb-local
+    working_dir: /home/dynamodblocal
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
     volumes:
-      - kubernetes:/etc/rancher
-    ports:
-      - 30000-30100:30000-30100
-# {PORTS}
-  slate:
-    depends_on:
-      - db
-      - kube
-    image: {IMAGE}
-    command: /usr/bin/supervisord -c /etc/supervisord.conf
-    stdin_open: true
-    tty: true
-    volumes:
-      - kubernetes:/etc/rancher
-# {VOLUMES}
-    ports:
-      - 5050:5050
-      - 5100:5100
-      - 18080:18080
+      - dynamodb_data:/home/dynamodblocal/data
+      - dynamodb_lib:/home/dynamodblocal/DynamoDBLocal_lib
+    restart: always
+    user: root
+#  kube:
+#    image: rancher/k3s:v1.19.5-k3s1-amd64
+#    restart: always
+#    tty: true
+#    privileged: true
+#    command: server --https-listen-port 6443 --kube-apiserver-arg service-node-port-range=30000-30100
+#    volumes:
+#      - kubernetes:/etc/rancher
+#    ports:
+#      - 127.0.0.1:30000-30100:30000-30100
+## {PORTS}
+#  slate:
+#    depends_on:
+#      - db
+#      - kube
+#    image: {IMAGE}
+#    command: /usr/bin/supervisord -c /etc/supervisord.conf
+#    stdin_open: true
+#    tty: true
+#    volumes:
+#      - kubernetes:/etc/rancher
+## {VOLUMES}
+#    ports:
+#      - 127.0.0.1:5050:5050
+#      - 127.0.0.1:5100:5100
+#      - 127.0.0.1:18080:18080
 volumes:
+  dynamodb_data:
+  dynamodb_lib:
   kubernetes:
   nfsdata:
